@@ -1,0 +1,58 @@
+# Private notes and handovers never go in the repo.
+private/
+backups/
+HANDOVER*.md
+*.local.md
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Recordings hold prompts, tool results and possibly personal data.
+# Only synthetic fixtures under tests/fixtures/ and the planted-fault
+# benchmark set are committed; anything recorded from a live agent stays
+# out (threat model).
+recordings/
+data/live/
+data/private/
+*.flightrec
+*.flightrec.zst
+
+# Downloaded models and datasets: fetched by a script, never committed
+models/
+data/downloads/
+*.gguf
+*.safetensors
+
+# Generated bulk, dumps and logs
+runs/
+logs/
+*.log
+*.dump
+*.sql.gz
+*.sqlite
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.pyright/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Node / Vue
+node_modules/
+ui/dist/
+.vite/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
