@@ -203,6 +203,19 @@ ours, because the benchmark depends on it (and bugs found go upstream).
 | **Number** | Runs that replay bit-exactly by tracefork's own check, with the network blocked |
 | **Pass** | **100%**, or each failure traced to a cause and reported (to tracefork if it's theirs, to the agent's session if it's the agent's). A failure blocks the benchmark until explained |
 
+**Result, A1 (2026-11-10, `afr replay-holds a1 --runs 50`, `qwen3.5:4b`):
+50/50 replayed bit-exactly with the same verdict.** Calls on the tapes
+against calls logged by the other side: 204 model calls taped, 204 in
+Ollama's server log; 128 tool calls taped, 128 in Flight School's shop log.
+Shiori's run waits for its test stack (P6: a pinned Juku checkout and a
+throwaway Postgres, planned with the Project 7 session).
+
+**Seen on the way, for the task filter:** of the 9 shop scenarios, only 2
+passed every time from scratch (5–6 runs each); the others failed 1 to 6
+times out of 5–6. The 4B model often refunds before verifying, or refunds
+twice. So A1 needs more candidate tasks than the 20 planned, or simpler
+ones, to keep 3 per fault type after the filter (`f(0) ≤ 0.2`).
+
 ## Nothing is missed at the seams
 
 | | |

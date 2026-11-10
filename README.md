@@ -19,8 +19,11 @@ Building. Spikes 1–4 are done (findings in the
 [architecture decisions](docs/planning/phase-5-architecture-decisions.md)):
 tracefork records and replays a PydanticAI agent on a local model with
 MCP tools bit-exactly, and three tracefork bugs were found on the way.
-No results yet; the headline numbers will be published whatever they turn
-out to be ([measurement plan](docs/planning/measurement-plan.md)).
+Slice 1: the shop agent (A1) replays bit-exactly in 50 of 50 runs, with
+no call missing from the tapes (204 model calls, 128 tool calls, checked
+against Ollama's and the shop's own logs). The headline numbers will be
+published whatever they turn out to be
+([measurement plan](docs/planning/measurement-plan.md)).
 
 Everything runs at $0: local models through Ollama, synthetic tasks.
 
