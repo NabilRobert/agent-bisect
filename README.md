@@ -28,7 +28,8 @@ Everything runs at $0: local models through Ollama, synthetic tasks.
 
 ```bash
 uv sync
-uv run afr versions
+uv run afr record a1 --task refund-own-order   # needs Ollama with qwen3.5:4b
+uv run afr replay runs/<run_id>                # offline: no model, no tools
 make check   # lint, types, tests, secrets, public-repo check: what CI runs
 ```
 
@@ -37,6 +38,10 @@ make check   # lint, types, tests, secrets, public-repo check: what CI runs
 | Path | What it holds |
 |---|---|
 | `src/afr/cli.py` | The `afr` command; each command calls into the package |
+| `src/afr/seams/` | Where calls are taped: the model's HTTP transport, the MCP toolset, step order, secret stripping, the sandbox guard |
+| `src/afr/agents/` | The agents under test (A1, the shop agent), each with its tasks and checker |
+| `src/afr/recording.py`, `runs.py` | Record and replay a run; a run on disk (`runs/`, git-ignored) |
+| `src/afr/replay_holds.py` | The "replay holds" check over many runs |
 | `tests/` | Tests, written as specifications; no model, no network |
 | `scripts/check_public.py` | The public-repo check (no server addresses, private notes, recordings or denylisted names) |
 | `docs/guide.md` | The plain-English guide: one run, step by step, and a glossary |

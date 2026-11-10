@@ -10,6 +10,15 @@ dependencies = [
     # holds its hash, and an upgrade is a reviewed commit (threat T11).
     "tracefork==1.0.0",
     "typer==0.27.3",
+    # The agents (ADR-004): PydanticAI, as Juku; its OpenAI client talks to
+    # Ollama's OpenAI-compatible endpoint, its MCP client to the tools.
+    "pydantic-ai-slim[openai,mcp]==2.66.0",
+    "httpx2==2.16.0",
+    "mcp==2.3.0",
+    "pydantic==2.14.1",
+    # A1's world, tools and rule checker (Project 10, Apache-2.0), pinned to
+    # a commit on its main.
+    "ai-flight-school @ git+https://github.com/NabilRobert/ai-flight-school@7f18196dad17316556578d2664cc9c8a0d101e6d",
 ]
 
 [project.scripts]
@@ -26,6 +35,9 @@ dev = [
 requires = ["hatchling==1.27.0"]
 build-backend = "hatchling.build"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/afr"]
 
@@ -39,6 +51,10 @@ target-version = "py312"
 select = ["E", "F", "W", "I", "B", "UP", "S", "ARG", "RUF", "C90", "PLR0911", "PLR0912", "PLR0913", "PLR0915"]
 # S101: pytest's asserts.
 ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+# The tests' canary secrets are fake on purpose: they check that real ones would be stripped.
+"tests/**" = ["S105", "S106"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
@@ -54,3 +70,5 @@ venv = ".venv"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--import-mode=importlib"
+# `tests/fakes.py` is imported by the tests as a plain module.
+pythonpath = ["tests"]

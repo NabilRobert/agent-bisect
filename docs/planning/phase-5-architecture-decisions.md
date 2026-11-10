@@ -274,6 +274,14 @@ the task list.
 **Why:** that's tracefork's contract; meeting it costs a few lines per
 agent and needs no change in Juku or Flight School.
 
+**As built (slice 1):** tracefork's CLI contract (`fn(anthropic.Anthropic)`)
+has no tool seam, so this repo drives tracefork's Python API and the
+contract is its own: an adapter in `src/afr/agents/<name>.py` with `name`,
+`version`, `task_ids()` and `async run(task_id, seams) -> RunOutcome`. The
+`Seams` hand it a taped model and a factory for taped MCP toolsets; the
+`RunOutcome` is its checker's verdict. Still no change in Juku or Flight
+School.
+
 ## ADR-007: Prefix bisection, measured against tracefork's blame and three judges
 
 **Decision:** auto-bisect, as defined in the measurement plan: probe `k`

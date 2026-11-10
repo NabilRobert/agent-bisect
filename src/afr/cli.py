@@ -4,11 +4,17 @@ Commands stay thin: they parse options and call a function in the package,
 so every behaviour is tested without going through the CLI.
 """
 
+import asyncio
 from importlib.metadata import version
+from pathlib import Path
+from typing import Annotated
 
 import typer
 
 app = typer.Typer(no_args_is_help=True, help="Find the step that broke an agent run.")
+
+RUNS_DIR = Path("runs")
+RunsDirOption = Annotated[Path, typer.Option(help="where runs are kept (git-ignored)")]
 
 
 @app.command("versions")
@@ -18,6 +24,48 @@ def show_versions() -> None:
     typer.echo(f"tracefork {version('tracefork')}")
 
 
-@app.callback()
-def main() -> None:
-    """Keep `afr versions` a subcommand while it is the only one."""
+@app.command("record")
+def record(
+    agent: Annotated[str, typer.Argument(help="the agent, e.g. a1")],
+    task: Annotated[str, typer.Option(help="the task id")],
+    runs_dir: RunsDirOption = RUNS_DIR,
+) -> None:
+    """Run one task live, taping every model and tool call."""
+    from afr.agents import get_adapter
+    from afr.recording import ModelConfig, outcome_summary, record_run
+    from afr.runs import save_run
+
+    record_, tape = asyncio.run(record_run(get_adapter(agent), task, ModelConfig()))
+    run_dir = save_run(runs_dir, record_, tape)
+    typer.echo(f"{run_dir}: {len(record_.steps)} steps, {outcome_summary(record_.outcome)}")
+
+
+@app.command("replay")
+def replay(run_dir: Annotated[Path, typer.Argument(help="a run folder under runs/")]) -> None:
+    """Replay a recorded run with no network; exit 1 unless it reproduces exactly."""
+    from afr.agents import get_adapter
+    from afr.recording import replay_run
+    from afr.runs import load_run
+
+    record_, tape = load_run(run_dir)
+    result = asyncio.run(replay_run(get_adapter(record_.agent), record_, tape))
+    typer.echo(result.model_dump_json(indent=2))
+    if not (result.bit_exact and result.same_outcome):
+        raise typer.Exit(1)
+
+
+@app.command("replay-holds")
+def replay_holds(
+    agent: Annotated[str, typer.Argument(help="the agent, e.g. a1")],
+    runs: Annotated[int, typer.Option(help="how many live runs to record and replay")] = 50,
+    ollama_log: Annotated[
+        Path | None, typer.Option(help="Ollama's server log, to count model calls independently")
+    ] = None,
+    runs_dir: RunsDirOption = RUNS_DIR,
+) -> None:
+    """Record live runs, replay each offline, and check nothing was missed at the seams."""
+    from afr.agents import get_adapter
+    from afr.replay_holds import check_replay_holds
+
+    report = asyncio.run(check_replay_holds(get_adapter(agent), runs, runs_dir, ollama_log))
+    typer.echo(report.model_dump_json(indent=2))
