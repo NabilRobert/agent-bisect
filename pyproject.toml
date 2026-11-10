@@ -10,9 +10,10 @@ dependencies = [
     # holds its hash, and an upgrade is a reviewed commit (threat T11).
     "tracefork==1.0.0",
     "typer==0.27.3",
-    # The agents (ADR-004): PydanticAI, as Juku; its OpenAI client talks to
+    # The agents (ADR-004): PydanticAI at Juku's pin, so Shiori runs on its own
+    # version in the same process as A1; its OpenAI client talks to
     # Ollama's OpenAI-compatible endpoint, its MCP client to the tools.
-    "pydantic-ai-slim[openai,mcp]==2.66.0",
+    "pydantic-ai-slim[openai,mcp]==2.56.0",
     "httpx2==2.16.0",
     "mcp==2.3.0",
     "pydantic==2.14.1",

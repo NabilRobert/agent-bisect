@@ -11,6 +11,7 @@ from typing import Literal
 import httpx2
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
+from pydantic_ai.settings import ModelSettings
 from tracefork import Tape
 from tracefork.redact import Redactor
 from tracefork.transport import AsyncTraceforkTransport
@@ -59,9 +60,9 @@ def model_transport(
 
 
 def openai_model(
-    model_name: str, base_url: str, transport: httpx2.AsyncBaseTransport
+    model_name: str, base_url: str, transport: httpx2.AsyncBaseTransport, settings: ModelSettings
 ) -> OpenAIChatModel:
     """A PydanticAI model on an OpenAI-compatible endpoint, every call through `transport`."""
     client = httpx2.AsyncClient(transport=transport)
     provider = OpenAIProvider(base_url=base_url, api_key=PLACEHOLDER_API_KEY, http_client=client)
-    return OpenAIChatModel(model_name, provider=provider)
+    return OpenAIChatModel(model_name, provider=provider, settings=settings)

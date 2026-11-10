@@ -65,6 +65,7 @@ class ShopAgent:
 
     name = "a1"
     version = "1"
+    model_settings = MODEL_SETTINGS
 
     def __init__(self, world_dir: Path = WORLD_DIR) -> None:
         self._world: World = load_world(world_dir / "world.yaml")
@@ -75,18 +76,16 @@ class ShopAgent:
     def task_ids(self) -> list[str]:
         return list(self._scenarios)
 
+    async def close(self) -> None:
+        """Nothing to stop: each run starts and stops its own tool server."""
+
     async def run(self, task_id: str, seams: Seams) -> RunOutcome:
         scenario = self._scenarios[task_id]
         shop = FakeShop(self._world)
         tools = AgentTools(shop)
         with tools_url(tools, seams) as url:
             toolset = seams.toolset(url, is_sandbox=True, on_served=apply_to(tools))
-            agent = Agent(
-                seams.model,
-                toolsets=[toolset],
-                instructions=INSTRUCTIONS,
-                model_settings=MODEL_SETTINGS,
-            )
+            agent = Agent(seams.model, toolsets=[toolset], instructions=INSTRUCTIONS)
             replies = await converse(agent, scenario, tools)
         return self._judge(shop, scenario, replies)
 

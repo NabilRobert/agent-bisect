@@ -38,6 +38,8 @@ logs/
 __pycache__/
 *.py[cod]
 .venv/
+# The local-only Shiori environment (juku-agents is private; see docs/guide.md)
+.venv-*/
 .pytest_cache/
 .ruff_cache/
 .pyright/

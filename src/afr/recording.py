@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 import httpx2
 from pydantic import BaseModel
+from pydantic_ai.settings import ModelSettings
 from tracefork import Tape
 from tracefork.nondet import find_divergence
 
@@ -44,12 +45,12 @@ class ReplayResult(BaseModel):
 
 
 def build_seams(
-    tape: Tape, mode: TapeMode, config: ModelConfig
+    tape: Tape, mode: TapeMode, config: ModelConfig, settings: ModelSettings
 ) -> tuple[Seams, StepLoggingTransport]:
     steps = StepLog()
     redactor = build_redactor()
     transport = model_transport(tape, mode, steps, redactor, live=config.live_transport)
-    model = openai_model(config.name, config.base_url, transport)
+    model = openai_model(config.name, config.base_url, transport, settings)
     return Seams(tape=tape, mode=mode, steps=steps, redactor=redactor, model=model), transport
 
 
@@ -57,7 +58,7 @@ async def record_run(
     adapter: AgentAdapter, task_id: str, config: ModelConfig
 ) -> tuple[RunRecord, Tape]:
     tape = Tape(agent_name=adapter.name)
-    seams, _ = build_seams(tape, "record", config)
+    seams, _ = build_seams(tape, "record", config, adapter.model_settings)
     outcome = stripped(await adapter.run(task_id, seams), seams)
     afr_version, tracefork_version = package_versions()
     record = RunRecord(
@@ -76,7 +77,8 @@ async def record_run(
 
 
 async def replay_run(adapter: AgentAdapter, record: RunRecord, tape: Tape) -> ReplayResult:
-    seams, transport = build_seams(tape, "replay", ModelConfig(name=record.model))
+    config = ModelConfig(name=record.model)
+    seams, transport = build_seams(tape, "replay", config, adapter.model_settings)
     try:
         outcome = await adapter.run(record.task_id, seams)
     except Exception as error:

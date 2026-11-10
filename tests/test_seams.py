@@ -15,7 +15,7 @@ from pydantic_ai import Agent, RunContext
 from pydantic_ai.mcp import CallToolFunc
 from tracefork import Tape, ToolTransport
 
-from afr.agents.shop import WORLD_DIR, ShopAgent
+from afr.agents.shop import MODEL_SETTINGS, WORLD_DIR, ShopAgent
 from afr.recording import ModelConfig, build_seams, record_run, replay_run
 from afr.seams.sandbox import SandboxViolation, check_live_call
 from afr.seams.steps import StepLog
@@ -55,7 +55,7 @@ async def run_with_meta_hook(tape: Tape) -> list[str]:
         [tool_call_reply("lookup_order", {"order_id": "o1"}, "call_1"), text_reply("It is $45.")]
     )
     config = ModelConfig(name="fake-model", live_transport=model_server.transport)
-    seams, _ = build_seams(tape, "record", config)
+    seams, _ = build_seams(tape, "record", config, MODEL_SETTINGS)
     with running_tool_server() as server:
         url = server.register(AgentTools(shop))
         toolset = seams.toolset(url, is_sandbox=True, process_tool_call=call_with_minted_token)
@@ -78,7 +78,7 @@ async def run_destructive_call_outside_sandbox() -> FakeShop:
         [tool_call_reply("delete_account", {"customer_id": "c1"}, "call_1")]
     )
     config = ModelConfig(name="fake-model", live_transport=model_server.transport)
-    seams, _ = build_seams(Tape(), "record", config)
+    seams, _ = build_seams(Tape(), "record", config, MODEL_SETTINGS)
     with running_tool_server() as server:
         toolset = seams.toolset(server.register(AgentTools(shop)), is_sandbox=False)
         with pytest.raises(BaseException) as raised:

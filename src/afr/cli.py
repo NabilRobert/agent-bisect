@@ -31,11 +31,12 @@ def record(
     runs_dir: RunsDirOption = RUNS_DIR,
 ) -> None:
     """Run one task live, taping every model and tool call."""
-    from afr.agents import get_adapter
+    from afr.agents import get_adapter, then_close
     from afr.recording import ModelConfig, outcome_summary, record_run
     from afr.runs import save_run
 
-    record_, tape = asyncio.run(record_run(get_adapter(agent), task, ModelConfig()))
+    adapter = get_adapter(agent)
+    record_, tape = asyncio.run(then_close(adapter, record_run(adapter, task, ModelConfig())))
     run_dir = save_run(runs_dir, record_, tape)
     typer.echo(f"{run_dir}: {len(record_.steps)} steps, {outcome_summary(record_.outcome)}")
 
@@ -43,12 +44,13 @@ def record(
 @app.command("replay")
 def replay(run_dir: Annotated[Path, typer.Argument(help="a run folder under runs/")]) -> None:
     """Replay a recorded run with no network; exit 1 unless it reproduces exactly."""
-    from afr.agents import get_adapter
+    from afr.agents import get_adapter, then_close
     from afr.recording import replay_run
     from afr.runs import load_run
 
     record_, tape = load_run(run_dir)
-    result = asyncio.run(replay_run(get_adapter(record_.agent), record_, tape))
+    adapter = get_adapter(record_.agent)
+    result = asyncio.run(then_close(adapter, replay_run(adapter, record_, tape)))
     typer.echo(result.model_dump_json(indent=2))
     if not (result.bit_exact and result.same_outcome):
         raise typer.Exit(1)
@@ -64,8 +66,10 @@ def replay_holds(
     runs_dir: RunsDirOption = RUNS_DIR,
 ) -> None:
     """Record live runs, replay each offline, and check nothing was missed at the seams."""
-    from afr.agents import get_adapter
+    from afr.agents import get_adapter, then_close
     from afr.replay_holds import check_replay_holds
 
-    report = asyncio.run(check_replay_holds(get_adapter(agent), runs, runs_dir, ollama_log))
+    adapter = get_adapter(agent)
+    work = check_replay_holds(adapter, runs, runs_dir, ollama_log)
+    report = asyncio.run(then_close(adapter, work))
     typer.echo(report.model_dump_json(indent=2))

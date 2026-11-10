@@ -56,6 +56,44 @@ flowchart LR
     J --> D[runs/run_id: tape.db + record.json]
 ```
 
+## Recording Shiori (A2, local only)
+
+Shiori is Juku's chat agent. juku-agents is a private repo, so A2 runs in
+its own local environment and never in CI. The plan is the Juku session's
+(P6): Juku's own throwaway test stack, with no change to Juku.
+
+1. A juku-agents checkout pinned to `d939c4f`, outside this repo (Juku's
+   test stack reads its migrations, rules and fixtures from the checkout).
+2. The environment, with Juku's packages installed editable:
+
+   ```bash
+   uv venv -p 3.12 .venv-shiori
+   J=<the checkout>
+   VIRTUAL_ENV=.venv-shiori uv pip install -e . -e $J/app -e $J/packages/juku-common \
+     -e $J/packages/juku-data -e $J/packages/juku-mcp -e $J/packages/juku-testkit -e $J/packages/juku-ops
+   ```
+
+3. A throwaway Postgres 16 on its own port, and Juku's settings:
+
+   ```bash
+   docker run -d --rm --name afr-juku-test-db --memory 512m -p 127.0.0.1:55460:5432 \
+     -e POSTGRES_HOST_AUTH_METHOD=trust postgres:16
+   export AFR_JUKU_CHECKOUT=$J JUKU_TEST_ADMIN_URL=postgresql://postgres@127.0.0.1:55460/postgres
+   export JUKU_OPENJLPT_DIR=<an OpenJLPT bf4e1ee folder>
+   ```
+
+4. `.venv-shiori/bin/afr record a2 --task c01`, then `afr replay` as for A1.
+
+How it works (`src/afr/agents/shiori.py`): the first run starts Juku's
+test stack (two throwaway databases and Juku's MCP server in this
+process). Each run loads a fresh copy of the task's learner, builds Shiori
+with Juku's `build_shiori` on the taped model and a taped toolset that
+keeps Juku's `mint_and_record` hook, and asks the question through Juku's
+`ask`. The clock is held at the suite's fixture time. Juku's graders
+(`answer_match`, `required_tools`) judge the answer. A replay still needs
+the stack, because Juku writes chat and budget rows, but makes no model or
+MCP call.
+
 ## Glossary
 
 | Word | Meaning | Where |
@@ -70,6 +108,7 @@ flowchart LR
 | **Adapter** | The small module that knows one agent: its tasks, how to build it on the seams, and its checker | `src/afr/agents/` |
 | **Checker** | Code that says whether a run failed; for A1, Flight School's rules plus the expected shop data | `ShopAgent._judge` |
 | **A1** | The shop agent: PydanticAI in Flight School's fake shop | `src/afr/agents/shop.py` |
+| **A2, Shiori** | Juku's chat agent, run on Juku's throwaway test stack; local only | `src/afr/agents/shiori.py` |
 | **Sandbox** | A tool server that holds only fake data; outside one, only tools marked read-only may run live (threat T3) | `src/afr/seams/sandbox.py` |
 | **`_meta` token** | The single-use delegation token Juku adds to each MCP call; sent to the server, never taped | `src/afr/seams/tools.py` |
 | **Redactor** | tracefork's secret stripper, set up with key patterns; applied to what is stored and to what is matched | `src/afr/seams/secrets.py` |
