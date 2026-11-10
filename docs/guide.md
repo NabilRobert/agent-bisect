@@ -56,6 +56,31 @@ flowchart LR
     J --> D[runs/run_id: tape.db + record.json]
 ```
 
+## Through the gateway: a verdict on each tool step
+
+`afr record a1 --task order-note-with-instructions --gateway` sends A1's
+tool calls through mcp-gateway, Arthur's MCP security gateway (slice 2):
+
+1. **The first run starts the stack** (`src/afr/gateway/stack.py:
+   running_gateway_stack`): Flight School's tool server with one
+   `SwitchableTools` registered for the whole session, and the gateway as a
+   subprocess (`$AFR_GATEWAY_COMMAND`, since the gateway's repo is private)
+   with a config written for the session: one route, a fresh caller key
+   (only its hash goes in the config), the rules detector, and `log` on a
+   suspicious output, so the run goes on as it would without a gateway.
+2. **Each run** (`src/afr/agents/shop.py: ShopAgent._run_through_gateway`)
+   switches the stack to a fresh shop, notes where the gateway's audit log
+   ends, and runs as before with the toolset pointed at the gateway.
+3. **After the run** (`src/afr/gateway/verdicts.py`) the audit lines written
+   during the run are read (`read_lines_since`), each call is paired with its
+   result line (`audited_calls`), and the calls are matched in order to the
+   taped tool calls (`taped_tool_calls`, `match_verdicts`); tool and
+   arguments must agree, or it's an error. The verdicts go into the run's
+   record (`RunOutcome.tool_verdicts`).
+
+A replay needs no gateway: the verdicts are the recorded run's, and the
+replay check compares everything else (`RunOutcome.same_verdict`).
+
 ## Recording Shiori (A2, local only)
 
 Shiori is Juku's chat agent. juku-agents is a private repo, so A2 runs in
@@ -112,6 +137,9 @@ MCP call.
 | **Sandbox** | A tool server that holds only fake data; outside one, only tools marked read-only may run live (threat T3) | `src/afr/seams/sandbox.py` |
 | **`_meta` token** | The single-use delegation token Juku adds to each MCP call; sent to the server, never taped | `src/afr/seams/tools.py` |
 | **Redactor** | tracefork's secret stripper, set up with key patterns; applied to what is stored and to what is matched | `src/afr/seams/secrets.py` |
+| **mcp-gateway** | Arthur's MCP security gateway (Project 4): keys, per-tool policy, an injection detector on every output, a hash-chained audit log | started by `src/afr/gateway/stack.py` |
+| **Verdict** | What the gateway decided about one tool call: allowed, blocked, logged (suspicious but passed on), denied, and whether the detector flagged it | `src/afr/gateway/verdicts.py: ToolVerdict` |
+| **Audit log** | The gateway's JSONL record of each call (tool, arguments) and its result (decision, detector), written before and after forwarding | read by `read_lines_since` |
 | **Public-repo check** | A script that fails the build on server addresses, private notes, recordings or denylisted names | `scripts/check_public.py` |
 
 ## Where to change things
@@ -127,6 +155,10 @@ MCP call.
 - **Change the model or its address:** `DEFAULT_MODEL` and
   `DEFAULT_MODEL_URL` in `src/afr/recording.py`; the sampling settings are
   `MODEL_SETTINGS` in the agent's module.
+- **Record through the gateway:** set `AFR_GATEWAY_COMMAND` to the
+  command that runs mcp-gateway, and pass `--gateway`. To change what the
+  gateway does on a suspicious output, or to add its model detector, edit
+  `gateway_config` in `src/afr/gateway/stack.py`.
 - **Add a command:** a function with `@app.command` in `src/afr/cli.py`
   that calls into the package; test the package function, not the CLI.
 - **Add a word the public repo must never contain:** append its SHA-256

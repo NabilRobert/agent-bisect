@@ -15,6 +15,12 @@ app = typer.Typer(no_args_is_help=True, help="Find the step that broke an agent 
 
 RUNS_DIR = Path("runs")
 RunsDirOption = Annotated[Path, typer.Option(help="where runs are kept (git-ignored)")]
+GatewayOption = Annotated[
+    bool,
+    typer.Option(
+        "--gateway", help="record a1's tool calls through mcp-gateway ($AFR_GATEWAY_COMMAND)"
+    ),
+]
 
 
 @app.command("versions")
@@ -29,13 +35,14 @@ def record(
     agent: Annotated[str, typer.Argument(help="the agent, e.g. a1")],
     task: Annotated[str, typer.Option(help="the task id")],
     runs_dir: RunsDirOption = RUNS_DIR,
+    gateway: GatewayOption = False,
 ) -> None:
     """Run one task live, taping every model and tool call."""
     from afr.agents import get_adapter, then_close
     from afr.recording import ModelConfig, outcome_summary, record_run
     from afr.runs import save_run
 
-    adapter = get_adapter(agent)
+    adapter = get_adapter(agent, via_gateway=gateway)
     record_, tape = asyncio.run(then_close(adapter, record_run(adapter, task, ModelConfig())))
     run_dir = save_run(runs_dir, record_, tape)
     typer.echo(f"{run_dir}: {len(record_.steps)} steps, {outcome_summary(record_.outcome)}")
@@ -64,12 +71,13 @@ def replay_holds(
         Path | None, typer.Option(help="Ollama's server log, to count model calls independently")
     ] = None,
     runs_dir: RunsDirOption = RUNS_DIR,
+    gateway: GatewayOption = False,
 ) -> None:
     """Record live runs, replay each offline, and check nothing was missed at the seams."""
     from afr.agents import get_adapter, then_close
     from afr.replay_holds import check_replay_holds
 
-    adapter = get_adapter(agent)
+    adapter = get_adapter(agent, via_gateway=gateway)
     work = check_replay_holds(adapter, runs, runs_dir, ollama_log)
     report = asyncio.run(then_close(adapter, work))
     typer.echo(report.model_dump_json(indent=2))

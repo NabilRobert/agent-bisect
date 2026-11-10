@@ -16,7 +16,7 @@ world, tools and rule checker are Flight School's (Project 10):
 # pyright: reportMissingTypeStubs=false
 
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +38,8 @@ from pydantic_ai.messages import ModelMessage
 from pydantic_ai.settings import ModelSettings
 
 from afr.agents.contract import RunOutcome, Seams
+from afr.gateway.stack import CALLER, GatewayStack, running_gateway_stack
+from afr.gateway.verdicts import audited_calls, match_verdicts, read_lines_since, taped_tool_calls
 
 WORLD_DIR = Path(__file__).with_name("shop_world")
 
@@ -67,27 +69,62 @@ class ShopAgent:
     version = "1"
     model_settings = MODEL_SETTINGS
 
-    def __init__(self, world_dir: Path = WORLD_DIR) -> None:
+    def __init__(self, world_dir: Path = WORLD_DIR, *, via_gateway: bool = False) -> None:
         self._world: World = load_world(world_dir / "world.yaml")
         self._rules: RuleSet = load_rules(world_dir / "rules.yaml")
         scenarios = load_scenarios(world_dir / "scenarios.yaml", self._world).scenarios
         self._scenarios: dict[str, Scenario] = {scenario.id: scenario for scenario in scenarios}
+        # Recording through mcp-gateway (slice 2); a replay never needs it.
+        self._via_gateway = via_gateway
+        self._gateway: GatewayStack | None = None
+        self._session = ExitStack()
 
     def task_ids(self) -> list[str]:
         return list(self._scenarios)
 
     async def close(self) -> None:
-        """Nothing to stop: each run starts and stops its own tool server."""
+        """Stop the gateway stack, if a run started one."""
+        self._session.close()
 
     async def run(self, task_id: str, seams: Seams) -> RunOutcome:
         scenario = self._scenarios[task_id]
         shop = FakeShop(self._world)
         tools = AgentTools(shop)
+        if self._via_gateway and seams.mode == "record":
+            return await self._run_through_gateway(scenario, shop, tools, seams)
         with tools_url(tools, seams) as url:
-            toolset = seams.toolset(url, is_sandbox=True, on_served=apply_to(tools))
-            agent = Agent(seams.model, toolsets=[toolset], instructions=INSTRUCTIONS)
-            replies = await converse(agent, scenario, tools)
+            replies = await self._converse(
+                scenario,
+                tools,
+                seams.toolset(url, is_sandbox=True, on_served=apply_to(tools)),
+                seams,
+            )
         return self._judge(shop, scenario, replies)
+
+    async def _run_through_gateway(
+        self, scenario: Scenario, shop: FakeShop, tools: AgentTools, seams: Seams
+    ) -> RunOutcome:
+        """As `run`, with the tools behind the gateway and its verdict on each tool step."""
+        gateway = self._started_gateway()
+        gateway.tools.current = tools
+        offset = gateway.audit_log.stat().st_size
+        headers = {"Authorization": f"Bearer {gateway.key}"}
+        toolset = seams.toolset(gateway.url, is_sandbox=True, headers=headers)
+        replies = await self._converse(scenario, tools, toolset, seams)
+        audited = audited_calls(read_lines_since(gateway.audit_log, offset), CALLER)
+        verdicts = match_verdicts(taped_tool_calls(seams.tape), audited)
+        return self._judge(shop, scenario, replies).model_copy(update={"tool_verdicts": verdicts})
+
+    def _started_gateway(self) -> GatewayStack:
+        if self._gateway is None:
+            self._gateway = self._session.enter_context(running_gateway_stack(self._world))
+        return self._gateway
+
+    async def _converse(
+        self, scenario: Scenario, tools: AgentTools, toolset: Any, seams: Seams
+    ) -> list[AgentReply]:
+        agent = Agent(seams.model, toolsets=[toolset], instructions=INSTRUCTIONS)
+        return await converse(agent, scenario, tools)
 
     def _judge(self, shop: FakeShop, scenario: Scenario, replies: list[AgentReply]) -> RunOutcome:
         log = ConversationLog(customer_id=scenario.customer_id, calls=shop.calls, replies=replies)

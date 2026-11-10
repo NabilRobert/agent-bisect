@@ -8,6 +8,7 @@ from pydantic_ai.models import Model
 from tracefork import Tape
 from tracefork.redact import Redactor
 
+from afr.gateway.verdicts import ToolVerdict
 from afr.seams.model import TapeMode
 from afr.seams.steps import StepLog
 from afr.seams.tools import ServedHook, TapedMCPToolset
@@ -22,6 +23,15 @@ class RunOutcome(BaseModel):
     # Tool calls as the tool side itself logged them (Flight School's shop
     # log, the gateway's audit log): checked against the tape, never taken from it.
     tool_calls_logged: int
+    # The gateway's verdict on each tool call, when the run went through it.
+    # Read live from its audit log, so a replay can't reproduce it and
+    # `same_verdict` leaves it out.
+    tool_verdicts: list[ToolVerdict] = []
+
+    def same_verdict(self, other: "RunOutcome") -> bool:
+        """Whether two runs reached the same verdict (the replay check)."""
+        live_only = {"tool_verdicts"}
+        return self.model_dump(exclude=live_only) == other.model_dump(exclude=live_only)
 
 
 @dataclass

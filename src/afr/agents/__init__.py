@@ -30,14 +30,16 @@ class AgentAdapter(Protocol):
         ...
 
 
-def get_adapter(name: str) -> AgentAdapter:
-    """The adapter registered under `name`."""
+def get_adapter(name: str, *, via_gateway: bool = False) -> AgentAdapter:
+    """The adapter registered under `name`; A1 can record through mcp-gateway."""
     # Imported here so `afr` starts without loading every agent's dependencies;
     # Shiori's exist only in the local Shiori environment.
     if name == "a1":
         from afr.agents.shop import ShopAgent
 
-        return ShopAgent()
+        return ShopAgent(via_gateway=via_gateway)
+    if via_gateway:
+        raise ValueError("only a1 records through the gateway; Shiori runs without it (P6)")
     if name == "a2":
         from afr.agents.shiori import ShioriAgent
 

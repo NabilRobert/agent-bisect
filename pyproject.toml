@@ -17,6 +17,7 @@ dependencies = [
     "httpx2==2.16.0",
     "mcp==2.3.0",
     "pydantic==2.14.1",
+    "pyyaml==6.0.3",
     # A1's world, tools and rule checker (Project 10, Apache-2.0), pinned to
     # a commit on its main.
     "ai-flight-school @ git+https://github.com/NabilRobert/ai-flight-school@7f18196dad17316556578d2664cc9c8a0d101e6d",

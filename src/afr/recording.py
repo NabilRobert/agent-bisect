@@ -90,7 +90,7 @@ async def replay_run(adapter: AgentAdapter, record: RunRecord, tape: Tape) -> Re
         t.frames_fully_consumed() for t in seams.toolsets
     )
     same_steps = seams.steps.steps == record.steps
-    same_outcome = outcome == record.outcome
+    same_outcome = outcome.same_verdict(record.outcome)
     return ReplayResult(
         bit_exact=all_served and same_steps and tape.digest() == record.tape_digest,
         model_exchanges=len(tape.exchanges),
@@ -108,6 +108,7 @@ def stripped(outcome: RunOutcome, seams: Seams) -> RunOutcome:
         problems=[strip_text(seams.redactor, problem) for problem in outcome.problems],
         final_answer=strip_text(seams.redactor, outcome.final_answer),
         tool_calls_logged=outcome.tool_calls_logged,
+        tool_verdicts=outcome.tool_verdicts,
     )
 
 

@@ -264,6 +264,17 @@ call comes from the gateway's audit log, as in "If yes" above.
 4. The instructions are fixed text; no clock or ids reach the prompt. The
    tool-call ids Ollama returns are in the taped responses.
 
+**As built (slice 2):** A1 records through the gateway on request. Flight
+School's tool server gives each conversation its own URL, but the
+gateway's upstream is fixed in its config, so one conversation is
+registered per session and switched to each run's fresh shop. The gateway
+runs with `on_suspicious: log`, so a flagged output still reaches the agent
+(what a planted F3 needs) and only the verdict is recorded. Verdicts are
+matched to taped tool calls in order, checked by tool and arguments.
+Shiori runs without the gateway (P6: it would add another source of
+nondeterminism). The gateway's rules alone miss most injections, as its
+own README measures; its model layer can be switched on.
+
 ## ADR-006: The agent contract: a callable, per tracefork
 
 **Decision:** each agent gets a small adapter module in this repo,
