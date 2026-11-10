@@ -1,0 +1,40 @@
+# make check on every push and pull request: ruff (with the complexity
+# rules), pyright strict, pytest, gitleaks and the public-repo check. No
+# secrets, no model, no network beyond installing the pinned tools: the
+# tests use fake models and synthetic data only.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      REQUIRE_TOOLS: "1"
+      GITLEAKS_VERSION: "8.30.1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gitleaks scans every commit, not only the last one.
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      # The exact versions in uv.lock; --locked fails if it no longer matches the pyproject files.
+      - run: uv sync --locked --python 3.12
+      # Retries: a release download once failed with an HTTP error that cleared within minutes.
+      - name: Install gitleaks, checked against its published checksum
+        run: |
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfL --retry 4 --retry-all-errors -O "${base}/${archive}"
+          curl -sSfL --retry 4 --retry-all-errors "${base}/gitleaks_${GITLEAKS_VERSION}_checksums.txt" | grep " ${archive}$" | sha256sum -c -
+          tar -xzf "${archive}" gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+      - run: make check

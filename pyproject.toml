@@ -1,0 +1,56 @@
+[project]
+name = "agent-bisect"
+version = "0.0.0"
+description = "Find the step that broke an agent run, and measure how well that works; built on tracefork"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # Record, bit-exact replay and fork (ADR-001), pinned exactly: uv.lock
+    # holds its hash, and an upgrade is a reviewed commit (threat T11).
+    "tracefork==1.0.0",
+    "typer==0.27.3",
+]
+
+[project.scripts]
+afr = "afr.cli:app"
+
+[dependency-groups]
+dev = [
+    "pyright==1.1.408",
+    "pytest==9.0.2",
+    "ruff==0.15.2",
+]
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/afr"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# C901 and PLR09xx: the lean-code limits (complexity 10, few returns,
+# branches, arguments and statements), as in Arthur's other repos.
+select = ["E", "F", "W", "I", "B", "UP", "S", "ARG", "RUF", "C90", "PLR0911", "PLR0912", "PLR0913", "PLR0915"]
+# S101: pytest's asserts.
+ignore = ["S101"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.pyright]
+include = ["src", "tests", "scripts"]
+exclude = ["**/.venv"]
+strict = ["src", "scripts"]
+pythonVersion = "3.12"
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib"
