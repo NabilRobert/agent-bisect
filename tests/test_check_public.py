@@ -56,3 +56,7 @@ def test_the_committed_denylist_holds_only_hashes() -> None:
 
     assert hashes
     assert all(len(entry) == 64 and int(entry, 16) >= 0 for entry in hashes)
+
+
+def test_tapes_of_the_synthetic_benchmark_set_may_be_committed() -> None:
+    assert check.problems_in_name("bench/frozen/a1/runs/a1-x-bad/tape.db") == []

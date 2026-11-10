@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from pydantic_ai.settings import ModelSettings
 from tracefork import Tape
 from tracefork.nondet import find_divergence
+from tracefork.redact import Redactor
 
 from afr.agents import AgentAdapter
 from afr.agents.contract import RunOutcome, Seams
@@ -59,7 +60,7 @@ async def record_run(
 ) -> tuple[RunRecord, Tape]:
     tape = Tape(agent_name=adapter.name)
     seams, _ = build_seams(tape, "record", config, adapter.model_settings)
-    outcome = stripped(await adapter.run(task_id, seams), seams)
+    outcome = stripped(await adapter.run(task_id, seams), seams.redactor)
     afr_version, tracefork_version = package_versions()
     record = RunRecord(
         run_id=new_run_id(adapter.name, task_id),
@@ -101,12 +102,12 @@ async def replay_run(adapter: AgentAdapter, record: RunRecord, tape: Tape) -> Re
     )
 
 
-def stripped(outcome: RunOutcome, seams: Seams) -> RunOutcome:
+def stripped(outcome: RunOutcome, redactor: Redactor) -> RunOutcome:
     """The outcome with secrets stripped, as the replayed agent will see them (T1)."""
     return RunOutcome(
         failed=outcome.failed,
-        problems=[strip_text(seams.redactor, problem) for problem in outcome.problems],
-        final_answer=strip_text(seams.redactor, outcome.final_answer),
+        problems=[strip_text(redactor, problem) for problem in outcome.problems],
+        final_answer=strip_text(redactor, outcome.final_answer),
         tool_calls_logged=outcome.tool_calls_logged,
         tool_verdicts=outcome.tool_verdicts,
     )

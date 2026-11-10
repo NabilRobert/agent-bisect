@@ -1,8 +1,9 @@
 # Guide
 
 A plain-English walk through agent-bisect, kept in step with the code.
-Slices 0 and 1 are built: the agents can be recorded and replayed. Planting
-faults, bisecting and scoring come next.
+Built so far: recording and replay (slice 1), the gateway's verdicts
+(slice 2), and probes, planted faults and the benchmark set's builder
+(slice 3a). Bisecting and scoring come after the set is frozen.
 
 ## The flow: record a run, then replay it
 
@@ -81,6 +82,36 @@ tool calls through mcp-gateway, Arthur's MCP security gateway (slice 2):
 A replay needs no gateway: the verdicts are the recorded run's, and the
 replay check compares everything else (`RunOutcome.same_verdict`).
 
+## Probes and planted faults: building the benchmark set
+
+**A probe** (`src/afr/probing.py`) answers "if the first `k` steps of this
+run happen exactly as recorded, how often does the rest fail?". It copies
+the run's first `k` steps into a new tape (`prefix_tape`) and runs the
+agent in `pin` mode (`continue_from`): model calls go through tracefork's
+`new_episodes` transport, which serves the pinned exchanges (checking each
+request's hash) and then goes live; the toolset serves the pinned tool
+frames, applies them to the fake shop, then goes live. `probe` does that
+`samples` times and counts failures: `f(k)`.
+
+**A planted fault** (`src/afr/faults.py`) replaces one step's response in a
+clean run (F1 wrong tool value, F2 tool error, F3 injected instruction, F4
+wrong model decision, F5 lost context). `planted_run` is the clean prefix
+plus the replaced step; probing it at `k+1` runs the agent on from the fault.
+
+`afr bench build a1 --set dev` builds a set (`src/afr/bench/build.py`):
+
+1. **Filter tasks** (`bench/tasks.py: filter_tasks`): each task 5 times from
+   scratch; kept if at most 1 in 5 fail.
+2. **Plan faults** (`bench/plant.py: plan_faults`): one clean passing run per
+   kept task; each fault type at its earliest and latest eligible step.
+3. **Check each fault** (`bench/effective.py: check_fault`): `f(k)` on the
+   clean run and `f(k+1)` on the planted one; effective if `f(k) ≤ 0.2` and
+   `f(k+1) ≥ 0.8`. The first failing continuation is the fault's **bad run**:
+   the run every method will be asked to explain.
+4. **Freeze** (`bench/frozen.py: freeze`): `bench/<set>/<agent>/manifest.json`
+   and every run, with a fingerprint over all of it. `load_frozen` refuses a
+   set whose manifest or tapes changed.
+
 ## Recording Shiori (A2, local only)
 
 Shiori is Juku's chat agent. juku-agents is a private repo, so A2 runs in
@@ -140,6 +171,12 @@ MCP call.
 | **mcp-gateway** | Arthur's MCP security gateway (Project 4): keys, per-tool policy, an injection detector on every output, a hash-chained audit log | started by `src/afr/gateway/stack.py` |
 | **Verdict** | What the gateway decided about one tool call: allowed, blocked, logged (suspicious but passed on), denied, and whether the detector flagged it | `src/afr/gateway/verdicts.py: ToolVerdict` |
 | **Audit log** | The gateway's JSONL record of each call (tool, arguments) and its result (decision, detector), written before and after forwarding | read by `read_lines_since` |
+| **Probe** | Pin a run's first `k` steps, let the agent continue live, repeat; the failure rate is `f(k)` | `src/afr/probing.py` |
+| **Pin mode** | Both seams serving the pinned steps from the tape, then going live | `seams/model.py`, `seams/tools.py` |
+| **Planted fault** | One step's response replaced in a clean run, so the right answer to "which step broke it" is known | `src/afr/faults.py` |
+| **Effective fault** | A planted fault that turns a run that usually passes into one that usually fails | `src/afr/bench/effective.py` |
+| **Bad run** | The failing continuation kept for each effective fault: what the methods analyse | `bad_run_record` |
+| **Frozen set** | The benchmark set, fingerprinted and committed before any method is scored | `src/afr/bench/frozen.py`, `bench/` |
 | **Public-repo check** | A script that fails the build on server addresses, private notes, recordings or denylisted names | `scripts/check_public.py` |
 
 ## Where to change things
@@ -159,6 +196,12 @@ MCP call.
   command that runs mcp-gateway, and pass `--gateway`. To change what the
   gateway does on a suspicious output, or to add its model detector, edit
   `gateway_config` in `src/afr/gateway/stack.py`.
+- **Change a fault type:** its builder in `src/afr/faults.py`; where it can
+  go, in `src/afr/bench/plant.py: eligible_steps`. Never in a frozen set:
+  build a new one.
+- **Change the effectiveness thresholds:** `MAX_FAILURE_BEFORE`,
+  `MIN_FAILURE_AFTER` in `src/afr/bench/effective.py` (fixed by the
+  measurement plan; change the plan first).
 - **Add a command:** a function with `@app.command` in `src/afr/cli.py`
   that calls into the package; test the package function, not the CLI.
 - **Add a word the public repo must never contain:** append its SHA-256

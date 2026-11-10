@@ -46,6 +46,9 @@ make check   # lint, types, tests, secrets, public-repo check: what CI runs
 | `src/afr/recording.py`, `runs.py` | Record and replay a run; a run on disk (`runs/`, git-ignored) |
 | `src/afr/replay_holds.py` | The "replay holds" check over many runs |
 | `src/afr/gateway/` | A1's tools behind mcp-gateway, and the gateway's verdict on each tool step |
+| `src/afr/probing.py`, `faults.py` | Probes (pin k steps, continue live) and the five planted fault types |
+| `src/afr/bench/` | Building, freezing and loading the planted-fault benchmark set |
+| `bench/` | The committed benchmark sets (synthetic), each with its fingerprint |
 | `tests/` | Tests, written as specifications; no model, no network |
 | `scripts/check_public.py` | The public-repo check (no server addresses, private notes, recordings or denylisted names) |
 | `docs/guide.md` | The plain-English guide: one run, step by step, and a glossary |

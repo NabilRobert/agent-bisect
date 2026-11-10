@@ -12,6 +12,8 @@ from typing import Annotated
 import typer
 
 app = typer.Typer(no_args_is_help=True, help="Find the step that broke an agent run.")
+bench_app = typer.Typer(no_args_is_help=True, help="The planted-fault benchmark set.")
+app.add_typer(bench_app, name="bench")
 
 RUNS_DIR = Path("runs")
 RunsDirOption = Annotated[Path, typer.Option(help="where runs are kept (git-ignored)")]
@@ -81,3 +83,32 @@ def replay_holds(
     work = check_replay_holds(adapter, runs, runs_dir, ollama_log)
     report = asyncio.run(then_close(adapter, work))
     typer.echo(report.model_dump_json(indent=2))
+
+
+@bench_app.command("build")
+def bench_build(  # noqa: PLR0913 - each option bounds the build
+    agent: Annotated[str, typer.Argument(help="the agent, e.g. a1")],
+    set_name: Annotated[str, typer.Option("--set", help="dev (while writing methods) or frozen")],
+    tasks: Annotated[str, typer.Option(help="comma-separated task ids; all by default")] = "",
+    max_tasks: Annotated[int, typer.Option(help="tasks to plant faults in, of those kept")] = 3,
+    samples: Annotated[int, typer.Option(help="continuations per probe")] = 5,
+    out: Annotated[Path, typer.Option(help="where sets are written")] = Path("bench"),
+    gateway: GatewayOption = False,
+) -> None:
+    """Filter tasks, plant faults, probe them and freeze the set (live: needs the model)."""
+    from afr.agents import get_adapter, then_close
+    from afr.bench.build import build_set
+    from afr.bench.frozen import freeze
+    from afr.recording import ModelConfig
+
+    folder = out / set_name / agent
+    if folder.exists():
+        raise typer.BadParameter(f"{folder} exists; a built set is never rebuilt in place")
+    adapter = get_adapter(agent, via_gateway=gateway)
+    task_ids = tasks.split(",") if tasks else adapter.task_ids()
+    work = build_set(adapter, task_ids, max_tasks, samples, ModelConfig(), typer.echo)
+    built, runs = asyncio.run(then_close(adapter, work))
+    frozen = freeze(folder, built, runs)
+    effective = [plan.fault_id for plan, _ in frozen.effective_plans()]
+    typer.echo(f"{folder}: {len(effective)} of {len(frozen.plans)} faults effective")
+    typer.echo(f"fingerprint {frozen.fingerprint}")

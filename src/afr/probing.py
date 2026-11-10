@@ -74,21 +74,36 @@ async def continue_from(
     return outcome, tape, seams.steps.steps
 
 
+@dataclass(frozen=True)
+class LiveRun:
+    """One continuation in full: its verdict, tape and steps, and what it cost."""
+
+    outcome: RunOutcome
+    tape: Tape
+    steps: list[Step]
+    cost: Continuation
+
+
+async def continue_and_measure(
+    adapter: AgentAdapter, run: PinnedRun, k: int, config: ModelConfig
+) -> LiveRun:
+    started = time.monotonic()
+    outcome, tape, steps = await continue_from(adapter, run, k, config)
+    pinned_model_calls = sum(step.kind == "model" for step in run.steps[:k])
+    cost = Continuation(
+        failed=outcome.failed,
+        live_model_calls=len(tape.exchanges) - pinned_model_calls,
+        live_tool_calls=sum(step.kind == "tool" for step in steps[k:]),
+        seconds=round(time.monotonic() - started, 3),
+    )
+    return LiveRun(outcome=outcome, tape=tape, steps=steps, cost=cost)
+
+
 async def probe(
     adapter: AgentAdapter, run: PinnedRun, k: int, samples: int, config: ModelConfig
 ) -> ProbeResult:
     """`samples` live continuations after pinning `k` steps."""
-    pinned_model_calls = sum(step.kind == "model" for step in run.steps[:k])
     continuations: list[Continuation] = []
     for _ in range(samples):
-        started = time.monotonic()
-        outcome, tape, steps = await continue_from(adapter, run, k, config)
-        continuations.append(
-            Continuation(
-                failed=outcome.failed,
-                live_model_calls=len(tape.exchanges) - pinned_model_calls,
-                live_tool_calls=sum(step.kind == "tool" for step in steps[k:]),
-                seconds=round(time.monotonic() - started, 3),
-            )
-        )
+        continuations.append((await continue_and_measure(adapter, run, k, config)).cost)
     return ProbeResult(k=k, continuations=continuations)

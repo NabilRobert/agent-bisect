@@ -20,6 +20,8 @@ class AgentAdapter(Protocol):
     # Set on the model itself, so they apply even when the agent's own code
     # builds the `Agent` (Shiori).
     model_settings: ModelSettings
+    # The instruction a planted F3 fault adds to a tool result, aimed at this agent.
+    injection: str
 
     def task_ids(self) -> list[str]: ...
 

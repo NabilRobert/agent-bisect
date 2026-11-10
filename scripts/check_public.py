@@ -35,6 +35,9 @@ WORD_PATTERN = re.compile(r"[a-z0-9]+")
 # Lock files are full of hashes and dotted versions; they hold no prose.
 SKIPPED_FILES = {"uv.lock", "scripts/public_denylist.sha256"}
 RECORDING_SUFFIXES = (".db", ".sqlite", ".tape", ".zst", ".flightrec")
+# The benchmark set is synthetic (scripted customers, fake shop) and is committed
+# on purpose, so a frozen set can be checked by its fingerprint.
+BENCHMARK_DIR = "bench/"
 PRIVATE_PATH = re.compile(r"(^|/)(HANDOVER[^/]*\.md|private/|backups/)")
 
 
@@ -47,7 +50,7 @@ def problems_in_name(path: str) -> list[str]:
     """A private note or a recording, judged by its path alone."""
     if PRIVATE_PATH.search(path):
         return [f"{path}: private notes never go in the repo"]
-    if path.endswith(RECORDING_SUFFIXES):
+    if path.endswith(RECORDING_SUFFIXES) and not path.startswith(BENCHMARK_DIR):
         return [
             f"{path}: recordings stay out of the repo (incidents go in via `afr incident save`)"
         ]
