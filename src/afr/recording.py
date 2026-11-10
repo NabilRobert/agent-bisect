@@ -29,8 +29,8 @@ DEFAULT_MODEL = "qwen3.5:4b"
 class ModelConfig:
     name: str = DEFAULT_MODEL
     base_url: str = DEFAULT_MODEL_URL
-    # For tests: a fake model server in place of the network while recording.
-    live_transport: httpx2.AsyncBaseTransport | None = None
+    # For tests: a fake model server in place of the network for live calls.
+    live_transport: httpx2.MockTransport | None = None
 
 
 class ReplayResult(BaseModel):

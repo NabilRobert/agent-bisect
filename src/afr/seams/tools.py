@@ -9,7 +9,9 @@ public methods of PydanticAI's `MCPToolset`:
 
 The `_meta` a hook adds goes to the live server but never into a frame, so a
 delegation token is neither stored nor matched (threat T1). On replay the
-toolset doesn't connect at all.
+toolset doesn't connect at all. In `pin` mode (a probe) the frames already
+on the tape are served first, then calls go live and are taped; that only
+runs against a sandbox (threat T3).
 """
 
 from collections.abc import Callable
@@ -28,7 +30,7 @@ from tracefork.tools import (
 )
 
 from afr.seams.model import TapeMode
-from afr.seams.sandbox import check_live_call
+from afr.seams.sandbox import SandboxViolation, check_live_call
 from afr.seams.steps import StepLog
 
 # Called with (tool name, arguments) each time a call is served from the tape,
@@ -53,14 +55,24 @@ class TapedMCPToolset(MCPToolset[Any]):
     ) -> None:
         # PydanticAI's signature names an optional fastmcp type pyright can't see.
         super().__init__(url, **toolset_options)  # pyright: ignore[reportUnknownMemberType]
+        if mode == "pin" and not is_sandbox:
+            raise SandboxViolation(
+                f"refused to probe through {url}: a probe continues live, so its tools must be "
+                "a sandbox (a fake world)"
+            )
         self._url = url
         self._mode: TapeMode = mode
-        self._frames = ToolTransport(mode, tape, redactor=redactor)
+        # Frames already on the tape are served (all of them on replay, the
+        # pinned prefix in a probe); anything after is live and taped.
+        self._to_serve = 0 if mode == "record" else len(tape.tool_exchanges)
+        self._served = 0
+        self._replayer = ToolTransport("replay", tape, redactor=redactor)
+        self._recorder = ToolTransport("record", tape, redactor=redactor)
         self._steps = steps
         self._is_sandbox = is_sandbox
         self._on_served = on_served
         self._tool_definitions: list[mcp_types.Tool] | None = None
-        self._slots = FrameSlots(self._frames)
+        self._slots = FrameSlots(self._recorder)
 
     async def __aenter__(self) -> Self:
         if self._mode == "replay":
@@ -86,9 +98,9 @@ class TapedMCPToolset(MCPToolset[Any]):
         use_task: bool = False,
     ) -> Any:
         request = make_tool_call_frame(None, name, args)  # no `metadata`: see the module docstring
-        if self._mode == "replay":
+        if self._served < self._to_serve:
             self._steps.add("tool")
-            payload = decode_result(self._frames.replay_exchange(request))
+            payload = self._serve(request)
             if self._on_served is not None:
                 self._on_served(name, args)
         else:
@@ -96,17 +108,20 @@ class TapedMCPToolset(MCPToolset[Any]):
         return unwrap(payload)
 
     def frames_fully_consumed(self) -> bool:
-        return self._frames.fully_consumed()
+        return self._served == self._to_serve
+
+    def _serve(self, request: bytes) -> Any:
+        self._served += 1
+        return decode_result(self._replayer.replay_exchange(request))
 
     async def _taped_tool_list(self) -> list[mcp_types.Tool]:
         request = make_request_frame(None, "tools/list")
         self._steps.add("tools_list")
-        if self._mode == "replay":
-            listed = decode_result(self._frames.replay_exchange(request))
-            return [mcp_types.Tool.model_validate(tool) for tool in listed]
+        if self._served < self._to_serve:
+            return [mcp_types.Tool.model_validate(tool) for tool in self._serve(request)]
         live = await super().list_tools()
         dumped = [tool.model_dump(mode="json", by_alias=True) for tool in live]
-        self._frames.record_exchange(request, make_result_frame(None, dumped))
+        self._recorder.record_exchange(request, make_result_frame(None, dumped))
         return live
 
     async def _record_call(
