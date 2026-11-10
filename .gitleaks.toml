@@ -1,0 +1,11 @@
+# gitleaks: the default rules, plus the tests' canary secrets, which are fake on
+# purpose (they prove real ones would be stripped from tapes; see tests/test_seams.py).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake canary secrets in the tests"
+regexTarget = "line"
+regexes = [
+    '''CANARY_[A-Z_]+ = "''',
+]
