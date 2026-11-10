@@ -15,9 +15,9 @@ about 3 days back from the cut list.
 |---|---|---|---|
 | P1 | Arthur settles D0–D9 below and OKs the five docs | Spike 1 | Arthur: done 2026-11-10, all as recommended |
 | P2 | The GitHub repo `agent-bisect` exists (D1) | Pushing anything | Arthur |
-| P3 | If spike 1 finds tracefork can't tape MCP over HTTP: a tape hook and a replay source in mcp-gateway (ADR-005), built **in its repo by its session** | Slice 2 | Project 4 session |
+| P3 | If spike 1 finds tracefork can't tape MCP over HTTP: a tape hook and a replay source in mcp-gateway (ADR-005), built **in its repo by its session** | Slice 2 | Project 4 session: **not needed** (spike 1, 2026-11-10: a wrapper on tracefork's tool seam tapes MCP; ADR-005) |
 | P4 | Project 15's anonymiser installable as a package (direct identifiers at least) | Slice 7 | Project 15 session |
-| P5 | AI Flight School's shop world and tools reachable over MCP from an agent outside its repo; its 7 seeded-bug reference agents importable (`flight_school.reference.agent:refunds_twice`, …) | Slices 1, 4 | Project 10 session (check only) |
+| P5 | AI Flight School's shop world and tools reachable over MCP from an agent outside its repo; its 7 seeded-bug reference agents importable (`flight_school.reference.agent:refunds_twice`, …) | Slices 1, 4 | Project 10 session (check only): **tools over MCP confirmed** in spike 3 (`running_tool_server`, its `main` at 7f18196) |
 | P6 | Shiori runnable one-shot against Ollama's OpenAI-compatible endpoint, with a Juku test database behind its MCP tools. It already takes a `base_url`, so likely a check only | Slices 1, 6 | Project 7 session |
 | P7 | Two or three nights of Mac time with no other heavy job | Slice 3c | Arthur (scheduling) |
 | P8 | About 1 hour of Arthur's time to label answer pairs | Slice 9 (Could) | Arthur |

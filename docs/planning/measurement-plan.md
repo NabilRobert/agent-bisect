@@ -179,6 +179,17 @@ another benchmark. Spike 3 (slice plan) measures the real seconds per
 call first; if the total passes 20 hours, the set shrinks to 2 tasks per
 fault type and the wider intervals are stated.
 
+**Spike 3 (2026-11-10):** an A1 prototype (PydanticAI over Flight School's
+shop, tools over MCP) on 5 of its scripted scenarios, once each: **2.8 s
+per model call** (20 calls, thinking off), runs of 2–6 model calls and 1–4
+tool calls (3–10 steps). At 2.8 s the ~12,000 calls above take about **9.3
+hours**, inside the budget, so the set keeps its size. Continuations are
+shorter than the 4 calls assumed (2–4), which leaves room for the
+effectiveness probes to be redone. Two of the five scenarios failed on
+their own (identity checked too late; refund over the agent's limit), so
+the task filter (`f(0) ≤ 0.2`) will drop some candidates. Shiori's timing
+is measured when its adapter lands (slice 1).
+
 ---
 
 ## Replay holds on our agents

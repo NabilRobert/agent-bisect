@@ -102,6 +102,41 @@ FastAPI + httpx proxy with the run id in the URL path, SQLite flight log
 with request hashes after redaction, strict replay with divergence
 reports, pinned-prefix forks. About 3 extra days, taken from the cut list.
 
+**Spike 1 result (2026-11-10): pass, so this ADR stands; the fallback is
+not needed.** tracefork 1.0.0 from PyPI, pydantic-ai-slim 2.66, a 4-step
+agent on `qwen3.5:4b` (Ollama, OpenAI-compatible) with two MCP tools
+through mcp-gateway:
+- **Record:** works, streamed (SSE) and not, at tracefork's transport
+  seam (`AsyncTraceforkTransport`, handed to `OpenAIProvider` as its HTTP
+  client). Tool calls go through tracefork's `ToolTransport` (ADR-005).
+- **Replay:** bit-exact with the gateway and tool server stopped: every
+  model request hash-matched, every tool frame matched, same digest.
+- **CLI:** `verify` passes and `fork --step 1/2` works, through a small
+  bridge (the CLI hands the agent a sync Anthropic client; its transport
+  is reused for the OpenAI client). `blame --k 2` runs but grades every
+  trial UNDEFINED on an OpenAI tape (bug 3 below).
+- **Where tracefork stops:** its CLI `replay`, `verify`, `fork` and
+  `blame` index **model exchanges only** and never read the tape's tool
+  log, so the CLI can't fork or blame a tool step, and `verify` passes
+  without checking tool frames. This repo drives tracefork's Python API
+  instead (ADR-005, ADR-007).
+
+**Bugs found in tracefork** (reported upstream by Arthur, D9; drafts in
+slice 10; each has a repro from the spike):
+1. `PydanticAIAdapter.bind(mode="record")` always raises: the sync
+   transport is built without an inner transport (crash).
+2. `PydanticAIAdapter.bind(mode="replay")` raises on pydantic-ai 2.66: it
+   tries to overwrite `OpenAIChatModel.client`, a read-only property
+   (crash). It also hands openai a real-`httpx` client, while openai 3.x
+   needs `httpx2` (suspected; hidden behind the crash).
+3. `blame` reads every response with the Anthropic parser and perturbs
+   with an Anthropic-format body: on an OpenAI tape every outcome reads as
+   empty, so blame reports no flips, or no valid trials (wrong result).
+
+Workarounds here: the transport seam instead of the adapter (ADR-004);
+blame's outcome parsing pointed at tracefork's own OpenAI adapter, each
+marked in the code with a link to its report.
+
 **Rejected:**
 - **Our own recorder first** (the original scope): duplicates tracefork
   and rewind, and spends the 2–3 weeks on solved parts.
@@ -171,6 +206,14 @@ proxy covers anything that isn't Python.
 `httpx2`; PydanticAI's OpenAI client uses `httpx`. Spike 1 checks the
 OpenAI path with streaming and tool calls end to end.
 
+**Spike 1 result:** the `httpx` worry is gone: openai 3.x itself uses
+`httpx2`. But tracefork's PydanticAI adapter fails in both modes (ADR-001,
+bugs 1 and 2), so the agents are recorded at **tracefork's transport
+seam**: this repo builds an `AsyncTraceforkTransport` (record or replay)
+and passes it to PydanticAI's `OpenAIProvider(http_client=...)`. That is
+the seam the adapter would have used, without its client search. Still no
+change to Shiori's code: its model is built by the caller.
+
 ## ADR-005: MCP tool calls: tracefork's MCP support first, a gateway hook if needed (accepted by Arthur 2026-11-10, D3)
 
 **Decision:** spike 1 checks whether tracefork tapes MCP tool calls made
@@ -194,6 +237,32 @@ design, so it can't be the tape.
 `_meta` on every call. It must be stripped before taping and left out of
 request matching, or every replay diverges and the tape holds a
 credential (threat model T1).
+
+**Spike 1 result: "yes", with a small wrapper; no gateway hook (P3 is not
+needed, D3 not triggered).** tracefork tapes MCP through its Python tool
+seam (`ToolTransport`, JSON-RPC frames in the tape's tool log), but only
+`tools/call`, and only if the client is wrapped; `tools/list` isn't taped,
+so a plain replay still dials the server. This repo wraps it in about 40
+lines: a `MCPToolset` subclass that overrides two public methods,
+`list_tools` and `direct_call_tool`, so both go through `ToolTransport`,
+and skips connecting on replay. Juku's `process_tool_call` hook still
+runs. The `_meta` token is passed to the live call but **never put in a
+frame**, so it is out of the tape and out of matching by construction.
+Spike 1 replayed with the gateway stopped. The detector's verdict per
+call comes from the gateway's audit log, as in "If yes" above.
+
+**Spike 4 (Shiori's nondeterminism, apart from model and tool calls):**
+1. The `_meta` delegation token: a fresh `uuid4` id and `time.time()`
+   claims per call (juku-common `delegation.py`). Handled as above.
+2. The per-call monitoring row (`tool_calls.py`): `datetime.now`, timings
+   and the trace id, written to `monitoring.tool_calls`. Not in any
+   request, so replay holds; but replays and probes write rows, so the
+   records engine must point at the Juku test database (T3).
+3. PydanticAI runs one response's tool calls concurrently. Frames written
+   on completion would come out in a racy order, so the wrapper reserves
+   each call's frame slot when the call starts.
+4. The instructions are fixed text; no clock or ids reach the prompt. The
+   tool-call ids Ollama returns are in the taped responses.
 
 ## ADR-006: The agent contract: a callable, per tracefork
 
@@ -226,6 +295,37 @@ Measured against:
 `log2(n)`. Whether it keeps the accuracy, and how both compare with
 reading the log, has not been measured on live agents by anyone found
 (prior art).
+
+**Spike 2 result: there is no blame-strategy extension point.** The
+plugin registries cover providers, oracles, serializers, matchers and
+adapters; `BlameEngine.rank` is a fixed per-step scan. So bisection lives
+in this repo, built on tracefork's public pieces: `Tape`,
+`TraceforkTransport` in `new_episodes` mode (replay the pinned prefix with
+hash checks, then go live and record: exactly a probe; sync only, so it
+runs in a worker thread under the async agent), `ToolTransport` plus a
+small pin-then-live tool transport (it has no `new_episodes`), and
+`proportion_ci`. The upstream offer (D9) becomes a PR that adds a strategy
+seam and async and tool `new_episodes`, if the pass rules hold.
+
+**What spike 1 changed for the comparison:**
+- **Steps:** tracefork numbers model exchanges and tool frames in two
+  separate lists. Bisection needs one order, so the recorder writes the
+  interleaving (model call, then its tool calls) into the run's sidecar
+  record (ADR-003).
+- **E's oracle:** tracefork's `Oracle` sees only the last model response's
+  text, not the run's tool calls, so Flight School's rules can't be an
+  `Oracle`. Every method is graded by this repo's checker.
+- **E's perturbation (needs Arthur, before slice 3c):** blame as shipped
+  replaces step `i` with a fixed "did not complete" text. That ends the
+  run at once, with no live tail, so on a failing run it almost never
+  flips, and on an OpenAI tape it doesn't run at all (bug 3). The plan
+  says E "resamples". **Recommended:** E = `BlameEngine.rank` with a
+  resample perturbation (a fresh live answer to step `i`'s recorded
+  request) and bug 3 worked around; since E can only name model steps, a
+  planted tool fault counts as found when E names the model call that
+  issued that tool call. Alternative: the shipped text perturbation,
+  converted to OpenAI format; cheaper, but it measures a different
+  question.
 
 **Datasets not used:** Who&When Pro's data is listed under **CC BY-NC-SA
 4.0** and its runs can't be re-executed here anyway; Who&When's logs are
