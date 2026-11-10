@@ -13,8 +13,8 @@ about 3 days back from the cut list.
 
 | # | Prerequisite | Needed for | Who |
 |---|---|---|---|
-| P1 | Arthur settles D0–D9 below and OKs the five docs | Spike 1 | Arthur |
-| P2 | The GitHub repo exists (name: D1) | Pushing anything | Arthur |
+| P1 | Arthur settles D0–D9 below and OKs the five docs | Spike 1 | Arthur: done 2026-11-10, all as recommended |
+| P2 | The GitHub repo `agent-bisect` exists (D1) | Pushing anything | Arthur |
 | P3 | If spike 1 finds tracefork can't tape MCP over HTTP: a tape hook and a replay source in mcp-gateway (ADR-005), built **in its repo by its session** | Slice 2 | Project 4 session |
 | P4 | Project 15's anonymiser installable as a package (direct identifiers at least) | Slice 7 | Project 15 session |
 | P5 | AI Flight School's shop world and tools reachable over MCP from an agent outside its repo; its 7 seeded-bug reference agents importable (`flight_school.reference.agent:refunds_twice`, …) | Slices 1, 4 | Project 10 session (check only) |
@@ -100,15 +100,18 @@ items 1–4 first.
 | Disk | Tapes zstd-compressed; raw continuations pruned after scoring; under 1 GB |
 | Server | The demo API (under 250 MB RAM) beside Shiori; tapes with retention |
 | Dependency | tracefork from PyPI (MIT), plus its small deps (Typer, FastAPI, zstandard, httpx2, anthropic SDK) |
-| Hosted model runs | None planned. A stronger judge is a Could needing Arthur's OK and a cap (D6) |
-| Arthur's time | Reading five docs (~1 h); decisions D0–D9; filing upstream reports; about 1 h of labelling if slice 9 survives |
+| Hosted model runs | None (D6: no hosted judge) |
+| Arthur's time | Reading five docs (~1 h); filing upstream reports; about 1 h of labelling if slice 9 survives |
 
-## Decisions for Arthur
+## Decisions
 
-| # | Decision | Recommendation |
+Arthur accepted every recommendation below on 2026-11-10. The
+alternatives are kept so the reasoning stays visible.
+
+| # | Question | Decision |
 |---|---|---|
-| **D0** | **Is this still the flagship, now that record, replay, fork and per-step blame exist (tracefork, MIT)?** What's left that's new is a measurement (interventional vs judge attribution on live agents, with cost), a cheaper bisect, and the wiring into his stack | **Yes, re-framed:** "how well can you find the step that broke an agent run, and what does it cost?", measured, built on tracefork and his own projects. Alternative: keep it as a smaller project and pick another flagship |
-| D1 | Repo name | **`agent-bisect`** (the headline is the method; "flight recorder" is now tracefork's job). Or keep `agent-flight-recorder`. CLI `afr` either way |
+| **D0** | **Is this still the flagship, now that record, replay, fork and per-step blame exist (tracefork, MIT)?** What's left that's new is a measurement (interventional vs judge attribution on live agents, with cost), a cheaper bisect, and the wiring into his stack | **Yes, re-framed:** "how well can you find the step that broke an agent run, and what does it cost?", measured, built on tracefork and his own projects. Rejected: keep it as a smaller project and pick another flagship |
+| D1 | Repo name | **`agent-bisect`** (the headline is the method; "flight recorder" is now tracefork's job). Rejected: keep `agent-flight-recorder`. CLI `afr` |
 | D2 | Build on tracefork (pinned), and install it from PyPI in spike 1 | Yes; fallback to our own thin recorder only if spike 1 fails |
 | D3 | If tracefork can't tape MCP: the Project 4 session adds a tape hook to mcp-gateway | Yes, a small general hook in the gateway, not a second MCP proxy here |
 | D4 | Demo agent | Shiori, on scripted synthetic conversations |

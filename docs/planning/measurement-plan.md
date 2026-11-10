@@ -10,8 +10,8 @@ worlds. Nothing recorded from a real person is measured or committed
 
 **Models:** the measured runs use local models already on the Mac
 (`qwen3.5:4b` as the agents' model and the judges' model), served by
-Ollama. No downloads, $0. A run with a stronger hosted judge is a Could,
-and needs Arthur's OK and a cap (D6 in the slice plan).
+Ollama. No downloads, $0. No hosted judge: Arthur decided to publish
+with the local judge and say so (D6 in the slice plan, 2026-11-10).
 
 **Prior art shapes this plan** (Phase 5): recording, exact replay and
 per-step counterfactual blame already exist (tracefork), validated only

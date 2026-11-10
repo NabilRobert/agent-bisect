@@ -17,7 +17,8 @@ effort where nothing exists yet: **a measurement on live agents**, a
 It is the seventeenth portfolio piece and the **flagship** (D0 in the
 slice plan): it uses the gateway, the tracing conventions, the harness,
 Flight School, the anonymiser and Juku, around one measured result.
-Repo (suggested): `agent-bisect` (D1). Licence: MIT (D7).
+Repo: `agent-bisect` (D1). Licence: MIT (D7). Arthur accepted all ten
+recommendations D0–D9 on 2026-11-10.
 
 **Measurement comes first.** The [measurement plan](measurement-plan.md)
 fixes the sets, methods and numbers before any architecture decision.
@@ -114,7 +115,7 @@ tries to keep re-running's accuracy at a fraction of its price.
 | Provides: `gen_ai.*` spans | agent-observability (Project 6) | tracefork's OTel export, in Project 6's conventions |
 | Needs: the demo agent | Juku (Project 7) | Shiori's base URL and MCP URL set in the demo's deployment; no code change |
 
-## Open questions
+## Decisions
 
-Listed with recommendations as D0–D9 in the
-[slice plan](slice-plan.md#decisions-for-arthur).
+Settled: D0–D9 are recorded, as decided on 2026-11-10, in the
+[slice plan](slice-plan.md#decisions).

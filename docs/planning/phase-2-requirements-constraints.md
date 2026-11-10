@@ -158,7 +158,7 @@ requirement is met by the dependency and only checked here.
 | Build starts after Nov 27 | Planning only now; spikes are tiny and wait for a quiet Mac |
 | 2–3 weeks of building | The slice plan has a cut list and a marked minimum |
 | $0 | Local models; the benchmark is sized to a few nights on the Mac |
-| No downloads without asking | Models already on disk (`qwen3.5:4b`, `qwen3:1.7b`); tracefork is a PyPI package, installed only in spike 1, with Arthur's OK (D2) |
+| No downloads without asking | Models already on disk (`qwen3.5:4b`, `qwen3:1.7b`); tracefork is a PyPI package, installed in spike 1 (approved by Arthur 2026-11-10, D2) |
 | Disk: about 8 GB free on the Mac | Tapes are zstd-compressed; benchmark keeps run records and prunes raw continuations after scoring; budget under 1 GB |
 | Heavy jobs one at a time | Benchmark nights never overlap another heavy job |
 | Small shared server | Demo API only; tapes with retention |

@@ -51,7 +51,7 @@ client repos), then everyone else's.
 | Judge baselines | Who&When and Who&When Pro's protocols (all-at-once, step-by-step, binary search over the log) | Re-implemented as Inspect tasks from the papers; no data from either dataset is used (licences, ADR-007) |
 | Step-level failure attribution by re-running | tracefork's blame (per-step flip-rate scan); retrial's `bisect` (MIT, unmeasured) | **Prefix bisection with a sequential sample rule**, and the measurement: the headline |
 
-## ADR-001: Build on tracefork, not a recorder of our own (needs Arthur, D2)
+## ADR-001: Build on tracefork, not a recorder of our own (accepted by Arthur 2026-11-10, D2)
 
 **Context:** the brief scoped record → replay → fork → diff → bisect →
 tests → UI as one product to build. The prior-art search found every one
@@ -171,7 +171,7 @@ proxy covers anything that isn't Python.
 `httpx2`; PydanticAI's OpenAI client uses `httpx`. Spike 1 checks the
 OpenAI path with streaming and tool calls end to end.
 
-## ADR-005: MCP tool calls: tracefork's MCP support first, a gateway hook if needed (needs Arthur, D3)
+## ADR-005: MCP tool calls: tracefork's MCP support first, a gateway hook if needed (accepted by Arthur 2026-11-10, D3)
 
 **Decision:** spike 1 checks whether tracefork tapes MCP tool calls made
 over streamable HTTP (its `mcp` extra) for Shiori's `MCPToolset`, so that
@@ -293,7 +293,7 @@ LangSmith score runs, they don't say what changed.
 **Rejected:** *embeddings* (a download; a score without an explanation);
 *a hosted judge* (cost; sends content out).
 
-## ADR-011: The demo: Shiori on the server, curated incidents (needs Arthur, D4, D5)
+## ADR-011: The demo: Shiori on the server, curated incidents (accepted by Arthur 2026-11-10, D4, D5)
 
 **Decision:** Shiori runs on the server recorded through tracefork and the
 gateway, on **scripted synthetic conversations** (a learner asking about
