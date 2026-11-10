@@ -129,7 +129,7 @@ requirement is met by the dependency and only checked here.
 | N4 | **Arthur's stack:** Python (Typer, FastAPI, Pydantic, pytest, uv, ruff, pyright), Vue 3 + TypeScript + Tailwind + Vite + Vitest, Inspect AI, OpenTelemetry via tracefork |
 | N5 | **Lean:** the folder's size limits and complexity rules in CI from slice 0; this repo holds only the benchmark, bisect, integrations and demo |
 | N6 | **Readable:** `docs/guide.md` follows one planted-fault run from recording, through bisect, to a saved incident |
-| N7 | **Public repo:** no server addresses, no October 2026 server-incident details, no employer or client names, no recordings of real people |
+| N7 | **Public repo:** no server addresses, no details of past security incidents, no employer or client names, no recordings of real people |
 | N8 | **Pinned dependency:** tracefork pinned by version and hash; every tracefork function used is read, and bugs found go upstream with a repro |
 
 ## Known limits (stated in the README)
