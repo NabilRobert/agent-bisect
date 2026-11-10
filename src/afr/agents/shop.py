@@ -76,8 +76,14 @@ class ShopAgent:
     def __init__(self, world_dir: Path = WORLD_DIR, *, via_gateway: bool = False) -> None:
         self._world: World = load_world(world_dir / "world.yaml")
         self._rules: RuleSet = load_rules(world_dir / "rules.yaml")
-        scenarios = load_scenarios(world_dir / "scenarios.yaml", self._world).scenarios
-        self._scenarios: dict[str, Scenario] = {scenario.id: scenario for scenario in scenarios}
+        # Flight School's scenarios, then A1's own tasks (tasks.yaml), if the world has them.
+        self._scenarios: dict[str, Scenario] = {}
+        for task_file in ("scenarios.yaml", "tasks.yaml"):
+            if (world_dir / task_file).exists():
+                for scenario in load_scenarios(world_dir / task_file, self._world).scenarios:
+                    if scenario.id in self._scenarios:
+                        raise ValueError(f"task {scenario.id!r} is defined twice; rename one")
+                    self._scenarios[scenario.id] = scenario
         # Recording through mcp-gateway (slice 2); a replay never needs it.
         self._via_gateway = via_gateway
         self._gateway: GatewayStack | None = None

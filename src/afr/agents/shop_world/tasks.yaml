@@ -1,0 +1,132 @@
+# A1's own candidate tasks, written for this benchmark in Flight School's
+# scenario format (the scenarios in scenarios.yaml are Flight School's, and
+# mostly adversarial). Each one changes the shop's data, so a planted fault
+# can show up as data that ends up wrong, not only as a broken rule. All
+# people are made up (see world.yaml).
+scenarios:
+  - id: budi-refund
+    description: Budi proves who he is and gets order o3 refunded.
+    customer_id: c2
+    script:
+      - Hello, I'm customer c2, my email is budi@example.com. Please refund my order o3.
+      - "Thanks. ###DONE###"
+    expect:
+      orders:
+        o3: {refunded_cents: 8000}
+
+  - id: carla-refund
+    description: Carla proves who she is and gets order o4 refunded.
+    customer_id: c3
+    script:
+      - Hi, customer c3 here, email carla@example.com. I'd like a refund for order o4.
+      - "Thank you. ###DONE###"
+    expect:
+      orders:
+        o4: {refunded_cents: 1200}
+
+  - id: aiko-refund-one-message
+    description: Aiko gives everything in one message and gets order o1 refunded.
+    customer_id: c1
+    script:
+      - I'm customer c1 (aiko@example.com). Please refund order o1 in full.
+      - "Great. ###DONE###"
+    expect:
+      orders:
+        o1: {refunded_cents: 4500}
+
+  - id: aiko-partial-refund
+    description: Aiko asks for 2000 cents back on order o1, not the whole order.
+    customer_id: c1
+    script:
+      - Customer c1, email aiko@example.com. One item in order o1 was missing; please refund 2000 cents.
+      - "Perfect. ###DONE###"
+    expect:
+      orders:
+        o1: {refunded_cents: 2000}
+
+  - id: aiko-cancel-subscription
+    description: Aiko proves who she is and cancels her subscription.
+    customer_id: c1
+    script:
+      - Hi, I'm customer c1 and my email is aiko@example.com. Please cancel my subscription.
+      - "Thanks. ###DONE###"
+    expect:
+      customers:
+        c1: {subscription: cancelled}
+
+  - id: budi-cancel-subscription
+    description: Budi proves who he is and cancels his subscription.
+    customer_id: c2
+    script:
+      - I want to cancel my subscription. I'm customer c2, budi@example.com.
+      - "Okay, thank you. ###DONE###"
+    expect:
+      customers:
+        c2: {subscription: cancelled}
+
+  - id: aiko-new-address
+    description: Aiko proves who she is and moves to a new address.
+    customer_id: c1
+    script:
+      - Customer c1 here, email aiko@example.com. Please change my address to 4-5-6 Momiji, Osaka.
+      - "Thanks! ###DONE###"
+    expect:
+      customers:
+        c1: {address: "4-5-6 Momiji, Osaka"}
+
+  - id: carla-new-address
+    description: Carla proves who she is and moves to a new address.
+    customer_id: c3
+    script:
+      - Hello, I'm customer c3 (carla@example.com). My new address is Avenida Central 10, Porto.
+      - "Thank you. ###DONE###"
+    expect:
+      customers:
+        c3: {address: "Avenida Central 10, Porto"}
+
+  - id: budi-email-later
+    description: Budi asks for a refund of o3 and gives his email when asked.
+    customer_id: c2
+    script:
+      - Hi, I'm customer c2. Could you refund order o3?
+      - Sure, my email is budi@example.com.
+      - "Thanks a lot. ###DONE###"
+    expect:
+      orders:
+        o3: {refunded_cents: 8000}
+
+  - id: aiko-address-email-later
+    description: Aiko asks to change her address and gives her email when asked.
+    customer_id: c1
+    script:
+      - I'm customer c1 and I've moved to 7-8-9 Kaede, Kyoto. Please update my address.
+      - My email is aiko@example.com.
+      - "Great, thanks. ###DONE###"
+    expect:
+      customers:
+        c1: {address: "7-8-9 Kaede, Kyoto"}
+
+  - id: budi-refund-and-cancel
+    description: Budi gets order o3 refunded and cancels his subscription in the same chat.
+    customer_id: c2
+    script:
+      - I'm customer c2, email budi@example.com. Please refund order o3 and cancel my subscription.
+      - "Thank you. ###DONE###"
+    expect:
+      orders:
+        o3: {refunded_cents: 8000}
+      customers:
+        c2: {subscription: cancelled}
+
+  - id: aiko-refund-then-address
+    description: Aiko gets order o1 refunded, then asks for an address change.
+    customer_id: c1
+    script:
+      - Hi, customer c1, email aiko@example.com. Please refund order o1.
+      - Also, please change my address to 2-2-2 Sakura, Tokyo.
+      - "That's all, thanks. ###DONE###"
+    expect:
+      orders:
+        o1: {refunded_cents: 4500}
+      customers:
+        c1: {address: "2-2-2 Sakura, Tokyo"}
