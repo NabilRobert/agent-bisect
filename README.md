@@ -19,9 +19,10 @@ Building. Spikes 1–4 are done (findings in the
 [architecture decisions](docs/planning/phase-5-architecture-decisions.md)):
 tracefork records and replays a PydanticAI agent on a local model with
 MCP tools bit-exactly, and three tracefork bugs were found on the way.
-Slice 1: the shop agent (A1) replays bit-exactly in 50 of 50 runs, with
-no call missing from the tapes (204 model calls, 128 tool calls, checked
-against Ollama's and the shop's own logs). The headline numbers will be
+Slice 1: both agents replay bit-exactly, 50 of 50 runs each, with no call
+missing from the tapes (checked against Ollama's log and the tool side's
+own log): the shop agent A1 (204 model calls, 128 tool calls) and Juku's
+Shiori (100 model calls, 50 tool calls). The headline numbers will be
 published whatever they turn out to be
 ([measurement plan](docs/planning/measurement-plan.md)).
 

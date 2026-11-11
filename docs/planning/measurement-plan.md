@@ -207,8 +207,11 @@ ours, because the benchmark depends on it (and bugs found go upstream).
 50/50 replayed bit-exactly with the same verdict.** Calls on the tapes
 against calls logged by the other side: 204 model calls taped, 204 in
 Ollama's server log; 128 tool calls taped, 128 in Flight School's shop log.
-Shiori's run waits for its test stack (P6: a pinned Juku checkout and a
-throwaway Postgres, planned with the Project 7 session).
+**Result, A2 Shiori (2026-11-11, `afr replay-holds a2 --runs 50`, Juku's
+test stack, `qwen3.5:4b`): 50/50 replayed bit-exactly with the same
+verdict.** 100 model calls taped, 100 in Ollama's log; 50 tool calls taped,
+50 in Juku's own per-call log (`monitoring.tool_calls`). 50 runs over all
+40 chat-suite tasks; 8 of 50 failed Juku's graders on their own.
 
 **Seen on the way, for the task filter:** of the 9 shop scenarios, only 2
 passed every time from scratch (5–6 runs each); the others failed 1 to 6
