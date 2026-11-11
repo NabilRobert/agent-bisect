@@ -1,0 +1,42 @@
+{
+  "run_id": "a1-aiko-refund-then-address-F4-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-then-address",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 2
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "address-change-needs-verification: update_address before verify_identity for c1",
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "Your address has been updated to 2-2-2 Sakura, Tokyo.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "9b30de62c07411d808415a1cabcc8ce68fb763b24d013cec54373cf9ffc67249",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

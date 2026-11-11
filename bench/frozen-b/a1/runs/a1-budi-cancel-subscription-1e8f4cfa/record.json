@@ -1,0 +1,35 @@
+{
+  "run_id": "a1-budi-cancel-subscription-1e8f4cfa",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "budi-cancel-subscription",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": false,
+    "problems": [],
+    "final_answer": "Your subscription (c2) has been cancelled successfully.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "9cd6dc8570858dfdf75eb331fa0dcc12819afcbc0a18940b8a9953893961699a",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

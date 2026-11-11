@@ -111,7 +111,7 @@ chat-suite tasks (`c01`-`c20`) that pass the filter. A1's faults are planted
 in every task of its 19 candidates that passes the filter and has a step a
 fault fits (its dev set uses the other two). The build ran in two batches,
 each frozen with its own fingerprint: `bench/frozen/a1` (2 tasks, 7 of 20
-faults effective) and `bench/frozen-b/a1` (the other 5 kept tasks). The
+faults effective) and `bench/frozen-b/a1` (the other 5 kept tasks, 12 of 34 effective). **A1: 19 effective faults of 54 planted** (F1 4, F2 2, F3 2, F4 10, F5 1), short of the planned ~30 because only 8 of 19 candidates pass the filter on the 4B model; the wider intervals are stated with the results. The
 first batch had been limited to 3 tasks and lost one slot to a task with
 no tool call, a builder bug fixed before the second batch. Together they
 are A1's frozen set; no method had been written or scored. The share of

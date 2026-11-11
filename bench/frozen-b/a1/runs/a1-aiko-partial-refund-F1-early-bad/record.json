@@ -1,0 +1,37 @@
+{
+  "run_id": "a1-aiko-partial-refund-F1-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-partial-refund",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I cannot proceed with the refund. The identity verification for customer c1 and email aiko@example.com has failed, so I am not authorized to process any refunds for this customer.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "44fa42388fc40eec0bf1f5dfc532f4921297dfb4144138ffb44808dd60d41dff",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

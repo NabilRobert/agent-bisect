@@ -1,0 +1,63 @@
+{
+  "run_id": "a1-aiko-refund-then-address-c872ae91",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-then-address",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 4
+    },
+    {
+      "kind": "tool",
+      "index": 4
+    },
+    {
+      "kind": "model",
+      "index": 5
+    }
+  ],
+  "outcome": {
+    "failed": false,
+    "problems": [],
+    "final_answer": "Your address has been updated to 2-2-2 Sakura, Tokyo.",
+    "tool_calls_logged": 4,
+    "tool_verdicts": []
+  },
+  "tape_digest": "4c18eeb22fbfdff293729acc6f828aa6932f40e23f189c739269a34b13d2bb83",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

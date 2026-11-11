@@ -1,0 +1,57 @@
+{
+  "run_id": "a1-aiko-refund-then-address-F4-late-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-then-address",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 4
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I have checked everything and it is all done.",
+    "tool_calls_logged": 3,
+    "tool_verdicts": []
+  },
+  "tape_digest": "533fb95b8b92065e7df50387551d12c7117feb33d07d5032089d0492d801e32b",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

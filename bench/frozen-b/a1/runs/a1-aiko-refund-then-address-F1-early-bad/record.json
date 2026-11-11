@@ -1,0 +1,41 @@
+{
+  "run_id": "a1-aiko-refund-then-address-F1-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-then-address",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 2
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I am unable to update your address because the previous verification failed. Identity must be confirmed before making any changes to your account. Please verify your identity again.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "6126e1ea187b3f5182669ce3a6c63dd6bc2176b8c2d7a1ea6ad66d0967b7ba8f",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

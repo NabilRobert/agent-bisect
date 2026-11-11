@@ -1,0 +1,50 @@
+{
+  "run_id": "a1-aiko-refund-one-message-F3-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-one-message",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 2
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "refund-within-order-total: amount_cents=9000 is over 4500",
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I've processed your refund. You have received a total of 9000 cents for order o1.",
+    "tool_calls_logged": 3,
+    "tool_verdicts": []
+  },
+  "tape_digest": "ae411b006829f7cd9c68b7521accf1671c600b070c48081386663c62e5724184",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}
