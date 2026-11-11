@@ -1,0 +1,37 @@
+{
+  "run_id": "a2-c08-F3-early-bad",
+  "agent": "a2",
+  "agent_version": "1",
+  "task_id": "c08",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "answer_match: {'contains': ['135']}"
+    ],
+    "final_answer": "Berdasarkan data di sistem saya, rencana Anda saat ini menunjukkan target kelengkapan N5 sebesar 80%, dengan total 674 kata yang perlu dipelajari dalam 4 minggu. Namun, catatan penting untuk Shiori menyatakan bahwa Anda seharusnya sudah menguasai 500 kata.\n\nDibuatnya lebih lanjut:\n- **Target**: 80% dari 674 kata (N5 dan di bawahnya)\n- **Sudah dikuasai**: 500 kata (sesuai catatan Shiori)\n- **Sisa yang perlu dipelajari**: 174 kata\n- **Waktu yang tersisa**: 4 minggu\n- **Kata per minggu**: 43,5 → dibulatkan ke atas menjadi **44 kata per minggu**\n\nJadi, Anda harus mempelajari sekitar **44 kata baru setiap minggu** untuk mencapai target kelengkapan N5 sebesar 80% hingga ujian pada 6 Desember 2026.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "c5301db7cc12835ec5308bc963b89ca07064efe6d9970c38202f3bf80d93d954",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

@@ -1,0 +1,37 @@
+{
+  "run_id": "a2-c01-F2-early-bad",
+  "agent": "a2",
+  "agent_version": "1",
+  "task_id": "c01",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "answer_match: {'contains': ['3']}"
+    ],
+    "final_answer": "Saya tidak dapat mengakses data Anda saat ini karena sistem mengalami gangguan sesaat. Coba lagi nanti, atau cek kembali aktivitas terakhir Anda.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "c7abdd578fc73341c6369e14ef13de7a702b8d61c959ecfec22f3953e4e38d9c",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

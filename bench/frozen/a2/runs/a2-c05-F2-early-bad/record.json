@@ -1,0 +1,37 @@
+{
+  "run_id": "a2-c05-F2-early-bad",
+  "agent": "a2",
+  "agent_version": "1",
+  "task_id": "c05",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "answer_match: {'contains': ['2']}"
+    ],
+    "final_answer": "Saya tidak dapat mengakses data kemajuan Anda saat ini karena terjadi kesalahan sistem. Mohon dicoba lagi nanti.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "ace95f27aa4daa28d988b48dcc89632caeb7112442a0201a083157d1575a1404",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

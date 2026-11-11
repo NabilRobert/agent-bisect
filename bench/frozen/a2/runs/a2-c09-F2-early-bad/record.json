@@ -1,0 +1,37 @@
+{
+  "run_id": "a2-c09-F2-early-bad",
+  "agent": "a2",
+  "agent_version": "1",
+  "task_id": "c09",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "answer_match: {'contains': ['4']}"
+    ],
+    "final_answer": "Saya tidak dapat melihat jadwal ujian Anda saat ini karena data belum tersedia. Apakah Anda memiliki informasi tentang tanggal ujian atau level JLPT yang ingin dicapai?",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "c5fd58939245d6117746a29c1341a1b5a2c3f26dff97cbc9a4f7f44484ce2dc4",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

@@ -1,0 +1,37 @@
+{
+  "run_id": "a2-c01-F3-early-bad",
+  "agent": "a2",
+  "agent_version": "1",
+  "task_id": "c01",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "answer_match: {'contains': ['3']}"
+    ],
+    "final_answer": "Menurut catatan saya, kamu sudah menguasai **500 kata** [ref:0].",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "aedbb19cf99a29530f61fef29d8395acc0bbf0ea9a19609ed694e81cc198855b",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

@@ -1,0 +1,37 @@
+{
+  "run_id": "a2-c10-F3-early-bad",
+  "agent": "a2",
+  "agent_version": "1",
+  "task_id": "c10",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "answer_match: {'contains': ['537']}"
+    ],
+    "final_answer": "Pelajar sudah menguasai **500 kata**. [ref:1]",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "6d4ebcf0842dc7e5d4bc62a7dba82bd5c3fd7d4d0790aeb3dbe9cdcf51fc3ce5",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}
