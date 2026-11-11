@@ -334,17 +334,16 @@ seam and async and tool `new_episodes`, if the pass rules hold.
 - **E's oracle:** tracefork's `Oracle` sees only the last model response's
   text, not the run's tool calls, so Flight School's rules can't be an
   `Oracle`. Every method is graded by this repo's checker.
-- **E's perturbation (needs Arthur, before slice 3c):** blame as shipped
-  replaces step `i` with a fixed "did not complete" text. That ends the
-  run at once, with no live tail, so on a failing run it almost never
-  flips, and on an OpenAI tape it doesn't run at all (bug 3). The plan
-  says E "resamples". **Recommended:** E = `BlameEngine.rank` with a
-  resample perturbation (a fresh live answer to step `i`'s recorded
-  request) and bug 3 worked around; since E can only name model steps, a
+- **E's perturbation (decided by Arthur 2026-11-11: resample):** blame as
+  shipped replaces step `i` with a fixed "did not complete" text. That
+  ends the run at once, with no live tail, so on a failing run it almost
+  never flips, and on an OpenAI tape it doesn't run at all (bug 3). So
+  **E = `BlameEngine.rank` with a resample perturbation:** step `i`'s
+  response is a fresh live answer to its recorded request, the tail runs
+  live, and bug 3 is worked around. E can only name model steps, so a
   planted tool fault counts as found when E names the model call that
-  issued that tool call. Alternative: the shipped text perturbation,
-  converted to OpenAI format; cheaper, but it measures a different
-  question.
+  issued that tool call. Rejected: the shipped text perturbation in
+  OpenAI format (cheaper, but it measures a different question).
 
 **Datasets not used:** Who&When Pro's data is listed under **CC BY-NC-SA
 4.0** and its runs can't be re-executed here anyway; Who&When's logs are

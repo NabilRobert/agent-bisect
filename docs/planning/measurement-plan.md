@@ -121,7 +121,7 @@ not in the frozen set) is used while writing it.
 | **B2: judge, all at once** | The local model reads the whole run and names the step (Who&When protocol) | 1 call |
 | **B3: judge, step by step** | The judge reads one step at a time and stops at the first it calls wrong (Who&When) | up to `n` calls |
 | **B4: judge, binary search over the log** | The judge halves the log, says which half holds the error, recurses (Who&When Pro) | about `log2(n)` calls |
-| **E: tracefork blame, as shipped** | Forks every step, resamples, ranks by flip-rate | about `n × k × (calls per continuation)` |
+| **E: tracefork blame, resampling** | tracefork's `BlameEngine`: each model step in turn gets a fresh live answer to its recorded request, the rest runs live, steps ranked by flip-rate (Arthur, 2026-11-11; ADR-007). A tool fault counts as found when E names the model call that issued the tool call | about `n × k × (calls per continuation)` |
 | **AB: prefix bisection** | Binary search with probes (this project) | about `log2(n) × S × (calls per continuation)` |
 
 E is expected to be accurate and expensive; AB's job is to keep most of
