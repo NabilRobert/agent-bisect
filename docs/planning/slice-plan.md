@@ -19,7 +19,7 @@ about 3 days back from the cut list.
 | P4 | Project 15's anonymiser installable as a package (direct identifiers at least) | Slice 7 | Project 15 session |
 | P5 | AI Flight School's shop world and tools reachable over MCP from an agent outside its repo; its 7 seeded-bug reference agents importable (`flight_school.reference.agent:refunds_twice`, …) | Slices 1, 4 | Project 10 session (check only): **tools over MCP confirmed** in spike 3 (`running_tool_server`, its `main` at 7f18196) |
 | P6 | Shiori runnable one-shot against Ollama's OpenAI-compatible endpoint, with a Juku test database behind its MCP tools. It already takes a `base_url`, so likely a check only | Slices 1, 6 | Project 7 session |
-| P7 | Two or three nights of Mac time with no other heavy job | Slice 3c | Arthur (scheduling) |
+| P7 | Two or three nights of Mac time with no other heavy job | Slice 3c | Arthur (scheduling): **Friday 13 and Saturday 14 November 2026** (decided 2026-11-11) |
 | P8 | About 1 hour of Arthur's time to label answer pairs | Slice 9 (Could) | Arthur |
 
 ## Spikes (after Nov 27, before slice 0; tiny, $0, on a quiet Mac)
