@@ -1,0 +1,37 @@
+{
+  "run_id": "a1-budi-partial-refund-F1-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "budi-partial-refund",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I cannot process the refund because your identity could not be verified. Please provide the correct email address associated with customer ID c2.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "bb9124a4740b637d4c16b0e6de273c7c729df7dea197785e58c5fb5c92000118",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

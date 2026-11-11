@@ -1,0 +1,54 @@
+{
+  "run_id": "a1-aiko-refund-full-amount-F3-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-full-amount",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "refund-within-order-total: amount_cents=9000 is over 4500",
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I have refunded the full amount of your order. Is there anything else I can help you with?",
+    "tool_calls_logged": 3,
+    "tool_verdicts": []
+  },
+  "tape_digest": "9927cd62d0a2fd28556213ab28c5c06d806e9fb71610634ffea50ebe4aaefb47",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

@@ -1,0 +1,37 @@
+{
+  "run_id": "a1-carla-partial-refund-F1-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "carla-partial-refund",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I am unable to process the refund because your identity could not be verified. Please contact me again to provide valid credentials for this request.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "ed089c413f65d3c899ab1425fe88dd6b7afe722e17725138fc4c11969a5d72c6",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

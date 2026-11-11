@@ -1,0 +1,46 @@
+{
+  "run_id": "a1-carla-partial-refund-F4-late-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "carla-partial-refund",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "refund-within-order-total: amount_cents=5000 is over 1200",
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "Your order has been processed.",
+    "tool_calls_logged": 2,
+    "tool_verdicts": []
+  },
+  "tape_digest": "ad477e36f5343ffc5b9470fd99ea60526d957d631bf1be1f7ccb9dd83a7e38cc",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

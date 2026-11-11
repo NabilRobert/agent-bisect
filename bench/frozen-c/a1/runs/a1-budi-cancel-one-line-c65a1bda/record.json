@@ -1,0 +1,35 @@
+{
+  "run_id": "a1-budi-cancel-one-line-c65a1bda",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "budi-cancel-one-line",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": false,
+    "problems": [],
+    "final_answer": "The subscription for customer c2 has been cancelled.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "80c9961de1cd9b1d2edfd9ba2acbd741721cfbd796d398c348f8ad7372a357d1",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

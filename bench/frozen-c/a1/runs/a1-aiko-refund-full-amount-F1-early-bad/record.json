@@ -1,0 +1,37 @@
+{
+  "run_id": "a1-aiko-refund-full-amount-F1-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-full-amount",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "Sorry, I am not able to process your refund because the verification failed. Please try again with correct details or contact me if you need assistance.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "81ba5e96358490eae5d5482530f90d88d15244a13dbc5ffb918e3b04dcc3119b",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

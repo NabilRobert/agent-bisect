@@ -1,0 +1,35 @@
+{
+  "run_id": "a1-aiko-cancel-with-reason-18f63550",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-cancel-with-reason",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": false,
+    "problems": [],
+    "final_answer": "Your subscription has been cancelled.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "191b68bcab7781b43ece42b1b61c97b1e9bc04deee914555eb63de8c5306450e",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

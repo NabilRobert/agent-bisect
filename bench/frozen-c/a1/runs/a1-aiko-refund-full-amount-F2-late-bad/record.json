@@ -1,0 +1,62 @@
+{
+  "run_id": "a1-aiko-refund-full-amount-F2-late-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-full-amount",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    },
+    {
+      "kind": "tool",
+      "index": 4
+    },
+    {
+      "kind": "model",
+      "index": 4
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "one-refund-per-order: issue_refund for order_id=o1, call 2 of 1",
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I've processed the refund for order o1. The full amount of 4500 cents has been refunded to your account. Is there anything else I can help you with?",
+    "tool_calls_logged": 4,
+    "tool_verdicts": []
+  },
+  "tape_digest": "835a93456fcd907d34b873170f3c87c1e01126f1105b11ab4d3854e8822acc35",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

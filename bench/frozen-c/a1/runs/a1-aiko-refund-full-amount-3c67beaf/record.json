@@ -1,0 +1,51 @@
+{
+  "run_id": "a1-aiko-refund-full-amount-3c67beaf",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-refund-full-amount",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    }
+  ],
+  "outcome": {
+    "failed": false,
+    "problems": [],
+    "final_answer": "I have processed a full refund of 4500 cents for order o1.",
+    "tool_calls_logged": 3,
+    "tool_verdicts": []
+  },
+  "tape_digest": "5fdc7f0c6e4d1b77667522a1c0a1b9440651d8a44b219b5a6b125bbe7ef6454a",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

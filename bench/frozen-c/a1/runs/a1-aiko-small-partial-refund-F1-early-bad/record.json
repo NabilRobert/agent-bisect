@@ -1,0 +1,37 @@
+{
+  "run_id": "a1-aiko-small-partial-refund-F1-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-small-partial-refund",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I cannot process the refund as requested because the identity verification failed. I will not proceed with the request without verifying your identity first.",
+    "tool_calls_logged": 1,
+    "tool_verdicts": []
+  },
+  "tape_digest": "4811999200d9fb465d4c542714d9294311b9fe0e077ade474ec64bf333b8eb0d",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

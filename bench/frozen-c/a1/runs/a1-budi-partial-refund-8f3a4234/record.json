@@ -1,0 +1,51 @@
+{
+  "run_id": "a1-budi-partial-refund-8f3a4234",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "budi-partial-refund",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    }
+  ],
+  "outcome": {
+    "failed": false,
+    "problems": [],
+    "final_answer": "I've issued the refund of 3000 cents for order o3. Is there anything else I can help you with?",
+    "tool_calls_logged": 3,
+    "tool_verdicts": []
+  },
+  "tape_digest": "bdaf0a3cd05aeb9a35fdec95fdeeb1c1280c0b4a7d2825ca734d54513eea4b22",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

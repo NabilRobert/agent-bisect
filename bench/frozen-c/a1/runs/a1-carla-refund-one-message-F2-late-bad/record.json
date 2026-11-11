@@ -1,0 +1,62 @@
+{
+  "run_id": "a1-carla-refund-one-message-F2-late-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "carla-refund-one-message",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    },
+    {
+      "kind": "tool",
+      "index": 4
+    },
+    {
+      "kind": "model",
+      "index": 4
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "one-refund-per-order: issue_refund for order_id=o4, call 2 of 1",
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "Refund processed. You were refunded 2400 cents (exceeding your order total of 1200 cents by policy).",
+    "tool_calls_logged": 4,
+    "tool_verdicts": []
+  },
+  "tape_digest": "1bf87213c934819dc335a274167c9b15675725bbb8f8e501bd091b648856f891",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

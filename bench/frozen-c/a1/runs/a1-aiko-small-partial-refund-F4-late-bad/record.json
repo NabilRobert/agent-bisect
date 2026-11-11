@@ -1,0 +1,54 @@
+{
+  "run_id": "a1-aiko-small-partial-refund-F4-late-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "aiko-small-partial-refund",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "refund-within-order-total: amount_cents=10000 is over 4500",
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "The refund of 10,000 cents has been processed for order o1. Since the request amount exceeded the order total, a larger refund was issued per policy requirements.",
+    "tool_calls_logged": 3,
+    "tool_verdicts": []
+  },
+  "tape_digest": "33ac156d677ce1c5464f7eb4f61b964928790153d9e8d1f00e47ec17e8c4926c",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

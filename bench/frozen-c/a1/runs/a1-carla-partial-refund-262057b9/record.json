@@ -1,0 +1,43 @@
+{
+  "run_id": "a1-carla-partial-refund-262057b9",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "carla-partial-refund",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    }
+  ],
+  "outcome": {
+    "failed": false,
+    "problems": [],
+    "final_answer": "Yes. A refund of 500 cents has been processed for order o4.",
+    "tool_calls_logged": 2,
+    "tool_verdicts": []
+  },
+  "tape_digest": "d4786932f2fa89e08f03f55c803fc6c918fc4f0345f385c2fe8f6dd651f13579",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}
