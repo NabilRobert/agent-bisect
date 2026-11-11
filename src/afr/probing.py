@@ -16,7 +16,7 @@ from tracefork import Tape
 
 from afr.agents import AgentAdapter
 from afr.agents.contract import RunOutcome
-from afr.recording import ModelConfig, build_seams
+from afr.recording import ModelConfig, build_seams, run_live
 from afr.seams.steps import Step
 
 
@@ -70,7 +70,7 @@ async def continue_from(
     tape = prefix_tape(run, k)
     # The model name is in every request body, so the pinned ones must match the run's.
     seams, _ = build_seams(tape, "pin", replace(config, name=run.model), adapter.model_settings)
-    outcome = await adapter.run(run.task_id, seams)
+    outcome = await run_live(adapter, run.task_id, seams)
     return outcome, tape, seams.steps.steps
 
 

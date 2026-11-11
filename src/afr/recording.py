@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 import httpx2
 from pydantic import BaseModel
+from pydantic_ai.exceptions import AgentRunError
 from pydantic_ai.settings import ModelSettings
 from tracefork import Tape
 from tracefork.nondet import find_divergence
@@ -24,6 +25,7 @@ from afr.seams.steps import StepLog
 
 DEFAULT_MODEL_URL = "http://127.0.0.1:11434/v1"  # Ollama's OpenAI-compatible endpoint
 DEFAULT_MODEL = "qwen3.5:4b"
+MAX_PROBLEM_CHARS = 300
 
 
 @dataclass(frozen=True)
@@ -45,6 +47,23 @@ class ReplayResult(BaseModel):
     divergence: str | None = None
 
 
+async def run_live(adapter: AgentAdapter, task_id: str, seams: Seams) -> RunOutcome:
+    """Run a task with live calls; an error from the model is that run failing.
+
+    A local model sometimes answers with output its server can't parse (Ollama
+    returns HTTP 500 on a malformed tool call). That run didn't succeed, so it
+    counts as failed, with the error as its problem, instead of ending a long
+    batch. Only PydanticAI's run errors are caught: a divergence from a pinned
+    prefix is tracefork's own `DivergenceError` and still stops everything,
+    since it means the agent no longer reproduces its tape.
+    """
+    try:
+        return await adapter.run(task_id, seams)
+    except AgentRunError as error:
+        problem = f"model error: {type(error).__name__}: {error}"[:MAX_PROBLEM_CHARS]
+        return RunOutcome(failed=True, problems=[problem], final_answer="", tool_calls_logged=0)
+
+
 def build_seams(
     tape: Tape, mode: TapeMode, config: ModelConfig, settings: ModelSettings
 ) -> tuple[Seams, StepLoggingTransport]:
@@ -60,7 +79,7 @@ async def record_run(
 ) -> tuple[RunRecord, Tape]:
     tape = Tape(agent_name=adapter.name)
     seams, _ = build_seams(tape, "record", config, adapter.model_settings)
-    outcome = stripped(await adapter.run(task_id, seams), seams.redactor)
+    outcome = stripped(await run_live(adapter, task_id, seams), seams.redactor)
     afr_version, tracefork_version = package_versions()
     record = RunRecord(
         run_id=new_run_id(adapter.name, task_id),

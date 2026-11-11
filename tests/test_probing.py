@@ -2,6 +2,7 @@
 
 import asyncio
 
+import httpx2
 import pytest
 from fakes import ScriptedModelServer, aiko_refund_script, text_reply, tool_call_reply
 from tracefork import Tape
@@ -103,3 +104,41 @@ def test_pinned_tool_calls_are_served_from_the_tape_not_called_again() -> None:
     _, tape, _ = asyncio.run(continue_from(ShopAgent(), run, len(run.steps), config))
 
     assert tape.tool_exchanges == run.tape.tool_exchanges  # nothing re-recorded
+
+
+class BrokenModelServer:
+    """Answers every request the way Ollama does when it can't parse the model's tool call."""
+
+    def __init__(self) -> None:
+        body = {"error": {"message": "XML syntax error on line 10: unexpected EOF"}}
+        self.transport = httpx2.MockTransport(lambda _request: httpx2.Response(500, json=body))
+
+
+def test_a_model_error_in_a_continuation_counts_as_a_failure_not_a_crash() -> None:
+    run = recorded_aiko()
+    config = ModelConfig(live_transport=BrokenModelServer().transport)
+
+    result = asyncio.run(probe(ShopAgent(), run, AFTER_VERIFY, samples=2, config=config))
+
+    assert result.failure_rate == 1.0
+
+
+def test_a_model_error_while_recording_is_a_failed_run() -> None:
+    config = ModelConfig(name="fake-model", live_transport=BrokenModelServer().transport)
+
+    record, _ = asyncio.run(record_run(ShopAgent(), TASK, config))
+
+    assert record.outcome.failed
+    assert record.outcome.problems[0].startswith("model error: ModelHTTPError")
+
+
+def test_a_divergence_in_the_pinned_steps_still_stops_the_probe() -> None:
+    run = recorded_aiko()
+    changed = ShopAgent()
+    changed._scenarios[TASK].script[0] = (
+        "A different first line."  # the first pinned request changes
+    )
+    config = ModelConfig(live_transport=ScriptedModelServer([]).transport)
+
+    with pytest.raises(BaseException, match="diverged"):
+        asyncio.run(probe(changed, run, AFTER_VERIFY, samples=1, config=config))
