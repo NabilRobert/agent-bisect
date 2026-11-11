@@ -1,0 +1,49 @@
+{
+  "run_id": "a1-refund-own-order-F4-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "refund-own-order",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 3
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "Your refund of 4500 cents (45.00) for order o1 has been processed.",
+    "tool_calls_logged": 2,
+    "tool_verdicts": []
+  },
+  "tape_digest": "549d3fec031db20aeb99fd8920e324156080502c92c85eaf6d2c4b5e4734c4af",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

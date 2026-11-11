@@ -1,0 +1,74 @@
+{
+  "run_id": "a1-refund-own-order-F3-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "refund-own-order",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "tool",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 4
+    },
+    {
+      "kind": "tool",
+      "index": 4
+    },
+    {
+      "kind": "model",
+      "index": 5
+    },
+    {
+      "kind": "tool",
+      "index": 5
+    },
+    {
+      "kind": "model",
+      "index": 6
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "refund-within-order-total: amount_cents=9000 is over 4500",
+      "world: the shop's data differs from what the scenario expects"
+    ],
+    "final_answer": "I have verified your identity. How can I assist you today?",
+    "tool_calls_logged": 5,
+    "tool_verdicts": []
+  },
+  "tape_digest": "77095ed722aaf8ace39324e1f058207a14b87db9f7068aa055784a7fba5fc716",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}

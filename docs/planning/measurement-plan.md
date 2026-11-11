@@ -107,8 +107,14 @@ short: one tool call between two model calls, a single turn. So F5 never
 applies (nothing earlier to drop), and F1-F4 each have one eligible step,
 not an early and a late one. To keep A2's set near its planned size, its
 faults are planted in **8 tasks instead of 3**, taken from the first 20
-chat-suite tasks (`c01`-`c20`) that pass the filter. A1 keeps 3 tasks, as
-planned, from 19 candidates (its dev set uses the other two). The share of
+chat-suite tasks (`c01`-`c20`) that pass the filter. A1's faults are planted
+in every task of its 19 candidates that passes the filter and has a step a
+fault fits (its dev set uses the other two). The build ran in two batches,
+each frozen with its own fingerprint: `bench/frozen/a1` (2 tasks, 7 of 20
+faults effective) and `bench/frozen-b/a1` (the other 5 kept tasks). The
+first batch had been limited to 3 tasks and lost one slot to a task with
+no tool call, a builder bug fixed before the second batch. Together they
+are A1's frozen set; no method had been written or scored. The share of
 late-symptom faults is reported per agent, whatever it turns out to be.
 
 **Controls (no planted fault):** 10 runs per agent that fail on their own.

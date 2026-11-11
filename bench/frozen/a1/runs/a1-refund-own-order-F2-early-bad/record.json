@@ -1,0 +1,57 @@
+{
+  "run_id": "a1-refund-own-order-F2-early-bad",
+  "agent": "a1",
+  "agent_version": "1",
+  "task_id": "refund-own-order",
+  "model": "qwen3.5:4b",
+  "steps": [
+    {
+      "kind": "tools_list",
+      "index": 0
+    },
+    {
+      "kind": "model",
+      "index": 0
+    },
+    {
+      "kind": "tool",
+      "index": 1
+    },
+    {
+      "kind": "model",
+      "index": 1
+    },
+    {
+      "kind": "tool",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 2
+    },
+    {
+      "kind": "model",
+      "index": 3
+    },
+    {
+      "kind": "model",
+      "index": 4
+    },
+    {
+      "kind": "model",
+      "index": 5
+    }
+  ],
+  "outcome": {
+    "failed": true,
+    "problems": [
+      "model error: ModelHTTPError: status_code: 500, model_name: qwen3.5:4b, body: {'message': 'XML syntax error on line 10: unexpected EOF', 'type': 'api_error', 'param': None, 'code': None}"
+    ],
+    "final_answer": "",
+    "tool_calls_logged": 0,
+    "tool_verdicts": []
+  },
+  "tape_digest": "fe778ac6d21e772e802848c18226f4a3a2405696e38f8cc5e842e2aa553bed67",
+  "afr_version": "0.0.0",
+  "tracefork_version": "1.0.0"
+}
