@@ -27,6 +27,7 @@ data/downloads/
 
 # Generated bulk, dumps and logs
 runs/
+runs-*/
 logs/
 *.log
 *.dump
