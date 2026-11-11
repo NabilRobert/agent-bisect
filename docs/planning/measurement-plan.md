@@ -117,6 +117,14 @@ no tool call, a builder bug fixed before the second batch. Together they
 are A1's frozen set; no method had been written or scored. The share of
 late-symptom faults is reported per agent, whatever it turns out to be.
 
+**A slip, recorded (2026-11-11, 12:40):** while mutation-testing the
+guard that keeps `afr bench try` off frozen sets, the broken guard let one
+test run start prefix bisection on `bench/frozen/a1` against the live model.
+It was stopped within minutes, before it printed or saved anything: no
+method's answer on a frozen run was seen or kept. The guard is now a plain
+function tested without the CLI, so breaking it can no longer start a live
+run.
+
 **Controls (no planted fault):** 10 runs per agent that fail on their own.
 There's no known right step, so they measure **how often each method
 points at a step anyway**, and its cost. Reported apart.
