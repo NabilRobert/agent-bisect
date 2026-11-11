@@ -83,6 +83,26 @@ def pinned(record: RunRecord, tape: Tape) -> PinnedRun:
     return PinnedRun(tape=tape, steps=record.steps, task_id=record.task_id, model=record.model)
 
 
+async def replacement_at(
+    clean: PinnedRun, step: int, fault: FaultType, injection: str, config: ModelConfig
+) -> bytes | None:
+    """The fault's replacement at an eligible step; None if F5's live call fails.
+
+    The model sometimes answers the shortened request with output its server
+    can't parse (Ollama's HTTP 500); then F5 isn't planted at that step,
+    rather than the whole build stopping.
+    """
+    if fault != "F5":
+        return replacement_for(clean, step, fault, injection)
+    shortened = shortened_request(clean, step)
+    if shortened is None:
+        return None
+    try:
+        return await live_reply(shortened, config)
+    except httpx2.HTTPStatusError:
+        return None
+
+
 async def plan_faults(
     adapter: AgentAdapter, record: RunRecord, tape: Tape, config: ModelConfig
 ) -> list[FaultPlan]:
@@ -92,13 +112,9 @@ async def plan_faults(
     plans: list[FaultPlan] = []
     for fault in (*TOOL_FAULTS, *MODEL_FAULTS):
         for position, step in positions(eligible_steps(clean, fault, injection)).items():
-            if fault == "F5":
-                shortened = shortened_request(clean, step)
-                assert shortened is not None  # eligible_steps checked it
-                replacement = await live_reply(shortened, config)
-            else:
-                replacement = replacement_for(clean, step, fault, injection)
-                assert replacement is not None
+            replacement = await replacement_at(clean, step, fault, injection, config)
+            if replacement is None:
+                continue
             plans.append(
                 FaultPlan(
                     fault_id=f"{adapter.name}-{clean.task_id}-{fault}-{position}",

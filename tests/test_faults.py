@@ -4,6 +4,7 @@ import asyncio
 import json
 from typing import Any
 
+import httpx2
 from fakes import (
     ScriptedModelServer,
     aiko_refund_script,
@@ -14,6 +15,7 @@ from fakes import (
 from tracefork.tools import decode_result, make_result_frame
 
 from afr.agents.shop import ShopAgent
+from afr.bench.plant import plan_faults
 from afr.faults import (
     EARLY_ANSWER,
     TOOL_ERROR,
@@ -153,3 +155,21 @@ def test_a_planted_run_pins_the_clean_prefix_and_serves_the_fault_at_its_step() 
     lookup_frame = continuation.tool_exchanges[clean.steps[lookup_step].index]
     assert decode_result(lookup_frame[1])["ok"]["total_cents"] == 45000  # type: ignore[index]
     assert rest.requests_served == 2  # only the steps after the fault went live
+
+
+def test_an_f5_whose_live_call_fails_is_left_out_and_the_other_faults_stay() -> None:
+    script = ScriptedModelServer(aiko_refund_script())
+    record, tape = asyncio.run(
+        record_run(
+            ShopAgent(),
+            "refund-own-order",
+            ModelConfig(name="fake-model", live_transport=script.transport),
+        )
+    )
+    failing = httpx2.MockTransport(
+        lambda _request: httpx2.Response(500, json={"error": "unparseable tool call"})
+    )
+
+    plans = asyncio.run(plan_faults(ShopAgent(), record, tape, ModelConfig(live_transport=failing)))
+
+    assert {plan.fault for plan in plans} == {"F1", "F2", "F3", "F4"}
