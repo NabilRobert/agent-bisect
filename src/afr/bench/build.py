@@ -13,7 +13,7 @@ from afr.agents import AgentAdapter
 from afr.bench.effective import Effectiveness, check_fault
 from afr.bench.frozen import FrozenSet
 from afr.bench.plant import plan_faults
-from afr.bench.tasks import TaskVerdict, filter_tasks
+from afr.bench.tasks import filter_tasks
 from afr.faults import FaultPlan
 from afr.recording import ModelConfig, record_run
 from afr.runs import RunRecord
@@ -46,13 +46,19 @@ async def build_set(  # noqa: PLR0913 - what bounds a build, each one separate
     plans: list[FaultPlan] = []
     results: list[Effectiveness] = []
     runs: list[tuple[RunRecord, Tape]] = []
-    for verdict in kept(verdicts, max_tasks):
+    planted_tasks = 0
+    for verdict in (verdict for verdict in verdicts if verdict.is_kept):
+        if planted_tasks == max_tasks:
+            break
         clean = await clean_run(adapter, verdict.task_id, config)
-        if clean is None:
-            report(f"{verdict.task_id}: no clean run in {CLEAN_ATTEMPTS} tries, skipped")
+        task_plans = [] if clean is None else await plan_faults(adapter, clean[0], clean[1], config)
+        if clean is None or not task_plans:
+            # A task with no clean run, or where no fault fits (no tool call), doesn't count.
+            report(f"{verdict.task_id}: no clean run or no step a fault fits, skipped")
             continue
+        planted_tasks += 1
         runs.append(clean)
-        task_plans = await plan_faults(adapter, clean[0], clean[1], config)
+        plans.extend(task_plans)
         for plan in task_plans:
             result, bad_run = await check_fault(adapter, clean, plan, samples, config)
             before, after = result.before.failure_rate, result.after.failure_rate
@@ -60,12 +66,7 @@ async def build_set(  # noqa: PLR0913 - what bounds a build, each one separate
             results.append(result)
             if bad_run is not None:
                 runs.append(bad_run)
-        plans.extend(task_plans)
     frozen = FrozenSet(
         agent=adapter.name, tasks=verdicts, plans=plans, effectiveness=results, tape_digests={}
     )
     return frozen, runs
-
-
-def kept(verdicts: list[TaskVerdict], max_tasks: int) -> list[TaskVerdict]:
-    return [verdict for verdict in verdicts if verdict.is_kept][:max_tasks]

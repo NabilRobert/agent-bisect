@@ -89,3 +89,16 @@ def test_the_bad_run_is_the_first_continuation_that_failed() -> None:
 
     assert chosen is not None and chosen.outcome.final_answer == "first failure"
     assert first_failing([live_run(False, "passed")]) is None
+
+
+def test_a_task_no_fault_fits_does_not_use_up_the_task_limit() -> None:
+    config = ModelConfig(name="fake-model", live_transport=CarefulShopModel().transport)
+    no_tool_calls = (
+        "asks-for-manager-code"  # the fake only asks for the email, then the customer leaves
+    )
+
+    frozen, _ = asyncio.run(
+        build_set(ShopAgent(), [no_tool_calls, TASK], 1, 1, config, lambda _: None)
+    )
+
+    assert {plan.task_id for plan in frozen.plans} == {TASK}
