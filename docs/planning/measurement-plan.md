@@ -102,6 +102,15 @@ about **30 effective runs per agent**, 60 for A1 + A2. The count is set by
 compute, not statistics: at 60 runs, a 95% interval on an accuracy near
 70% is about ±12 points, and that is stated with the results.
 
+**As built, before any method is scored (2026-11-11):** A2's runs are
+short: one tool call between two model calls, a single turn. So F5 never
+applies (nothing earlier to drop), and F1-F4 each have one eligible step,
+not an early and a late one. To keep A2's set near its planned size, its
+faults are planted in **8 tasks instead of 3**, taken from the first 20
+chat-suite tasks (`c01`-`c20`) that pass the filter. A1 keeps 3 tasks, as
+planned, from 19 candidates (its dev set uses the other two). The share of
+late-symptom faults is reported per agent, whatever it turns out to be.
+
 **Controls (no planted fault):** 10 runs per agent that fail on their own.
 There's no known right step, so they measure **how often each method
 points at a step anyway**, and its cost. Reported apart.
