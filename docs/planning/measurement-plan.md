@@ -117,6 +117,25 @@ no tool call, a builder bug fixed before the second batch. Together they
 are A1's frozen set; no method had been written or scored. The share of
 late-symptom faults is reported per agent, whatever it turns out to be.
 
+**The frozen set, final (2026-11-11, committed before any method code):**
+
+| Batch | Agent | Tasks | Effective / planted | Fingerprint |
+|---|---|---|---|---|
+| `bench/frozen/a1` | A1 | 2 | 7 / 20 | `79b05ca2…` |
+| `bench/frozen-b/a1` | A1 | 5 | 12 / 34 | `2e4925a8…` |
+| `bench/frozen-c/a1` | A1 | 9 | 29 / 73 | `eccc792b…` |
+| `bench/frozen/a2` | A2 | 8 | 13 / 32 | `abd548be…` |
+| **All** | | **24** | **61 / 159** | |
+
+By type, effective: A1 F1 9, F2 9, F3 3, F4 26, F5 1; A2 F3 5, F4 8 (Shiori
+shrugs off wrong values and tool errors; F5 doesn't apply to her). The set
+reaches the planned ~60 runs, but unevenly: A1 48, A2 13, and few F3 and
+F5. Results are reported per agent and per type with their intervals. A
+third A1 batch was added (10 new tasks, written before any method had run)
+because the first two held only 19. The full fingerprints are in each
+batch's `manifest.json`; `load_frozen` refuses a batch whose manifest or
+tapes changed.
+
 **A slip, recorded (2026-11-11, 12:40):** while mutation-testing the
 guard that keeps `afr bench try` off frozen sets, the broken guard let one
 test run start prefix bisection on `bench/frozen/a1` against the live model.
