@@ -59,3 +59,8 @@ ui/dist/
 .DS_Store
 .idea/
 .vscode/
+
+# The committed benchmark sets: synthetic runs, kept so a frozen set can be
+# checked by its fingerprint (scripts/check_public.py allows tapes here only).
+!bench/*/*/runs/
+!bench/*/*/runs/*/tape.db
