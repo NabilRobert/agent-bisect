@@ -130,3 +130,106 @@ scenarios:
         o1: {refunded_cents: 4500}
       customers:
         c1: {address: "2-2-2 Sakura, Tokyo"}
+
+  # Added 2026-11-11 for a third frozen batch: the forms that pass the
+  # filter on the 4B model (one message with id, email and request; refunds
+  # and cancellations). Address changes mostly fail it.
+  - id: carla-refund-one-message
+    description: Carla gives everything in one message and gets order o4 refunded.
+    customer_id: c3
+    script:
+      - I'm customer c3 (carla@example.com). Please refund order o4 in full.
+      - "Thanks. ###DONE###"
+    expect:
+      orders:
+        o4: {refunded_cents: 1200}
+
+  - id: budi-refund-one-message
+    description: Budi gives everything in one message and gets order o3 refunded.
+    customer_id: c2
+    script:
+      - Customer c2, email budi@example.com. I'd like a full refund for order o3.
+      - "Thank you. ###DONE###"
+    expect:
+      orders:
+        o3: {refunded_cents: 8000}
+
+  - id: aiko-small-partial-refund
+    description: Aiko asks for 1000 cents back on order o1.
+    customer_id: c1
+    script:
+      - I'm customer c1, aiko@example.com. Please refund 1000 cents of order o1; one item was damaged.
+      - "Thanks. ###DONE###"
+    expect:
+      orders:
+        o1: {refunded_cents: 1000}
+
+  - id: budi-partial-refund
+    description: Budi asks for 3000 cents back on order o3.
+    customer_id: c2
+    script:
+      - Hi, customer c2 here (budi@example.com). Please refund 3000 cents of order o3.
+      - "Great. ###DONE###"
+    expect:
+      orders:
+        o3: {refunded_cents: 3000}
+
+  - id: carla-partial-refund
+    description: Carla asks for 500 cents back on order o4.
+    customer_id: c3
+    script:
+      - Customer c3, email carla@example.com. Could you refund 500 cents of order o4?
+      - "Thank you. ###DONE###"
+    expect:
+      orders:
+        o4: {refunded_cents: 500}
+
+  - id: aiko-cancel-with-reason
+    description: Aiko cancels her subscription, giving a reason.
+    customer_id: c1
+    script:
+      - I'm customer c1, my email is aiko@example.com. I'm moving abroad, so please cancel my subscription.
+      - "Thanks. ###DONE###"
+    expect:
+      customers:
+        c1: {subscription: cancelled}
+
+  - id: budi-cancel-one-line
+    description: Budi cancels his subscription in one line.
+    customer_id: c2
+    script:
+      - Please cancel the subscription for customer c2, email budi@example.com.
+      - "Okay. ###DONE###"
+    expect:
+      customers:
+        c2: {subscription: cancelled}
+
+  - id: aiko-refund-full-amount
+    description: Aiko asks for the full amount of order o1 back.
+    customer_id: c1
+    script:
+      - Hello, customer c1 (aiko@example.com). Order o1 never arrived; please refund the full amount.
+      - "Thank you. ###DONE###"
+    expect:
+      orders:
+        o1: {refunded_cents: 4500}
+
+  - id: budi-refund-wrong-item
+    description: Budi got the wrong item and asks for a full refund of order o3.
+    customer_id: c2
+    script:
+      - I'm customer c2, budi@example.com. Order o3 was the wrong item. Please refund all of it.
+      - "Thanks. ###DONE###"
+    expect:
+      orders:
+        o3: {refunded_cents: 8000}
+
+  - id: carla-refund-late-delivery
+    description: Carla's order o4 came late and she asks for a full refund.
+    customer_id: c3
+    script:
+      - Customer c3 here, carla@example.com. Order o4 arrived two weeks late; please refund it fully.
+      - "Thanks a lot. ###DONE###"
+    expect:
+      orders:
+        o4: {refunded_cents: 1200}
